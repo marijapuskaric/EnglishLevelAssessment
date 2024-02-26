@@ -1,75 +1,63 @@
 ﻿@page "/"
+@inject MaturaService MaturaService
+@inject CollegeService CollegeService
 
 <form>
-    <label>Smjer:</label>
-    <InputSelect @bind-Value=studyProgramme>
-        @foreach (var i in studyProgrammes)
-        {
-            <option value="@i">@i</option>
-        }
-    </InputSelect>
-    <label>Godina:</label>
-    <InputSelect @bind-Value=year>
-        @foreach (var i in years)
-        {
-            <option value="@i">@i</option>
-        }
-    </InputSelect>
-    <label>Razina mature iz engleskog jezika:</label>
-    <InputSelect @bind-Value=maturaLevel>
-        @foreach (var i in maturaLevels)
-        {
-            <option value="@i">@i</option>
-        }
-    </InputSelect>
-    <label>Ocjena mature iz engleskog jezika:</label>
-    <InputSelect @bind-Value=maturaGrade>
-        @foreach (var i in maturaGrades)
-        {
-            <option value="@i">@i</option>
-        }
-    </InputSelect>
+    <div class="mb-3">
+        <label class="form-label">Smjer:</label>
+        <InputSelect @bind-Value=studyProgramme class="form-select">
+            @foreach (var i in studyProgrammes)
+            {
+                <option class="" Value="@i">@i.Programme</option>
+            }
+        </InputSelect>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Godina:</label>
+        <InputSelect @bind-Value=year class="form-select">
+            @foreach (var i in years)
+            {
+                <option Value="@i">@i.Year</option>
+            }
+        </InputSelect>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Razina mature iz engleskog jezika:</label>
+        <InputSelect @bind-Value=maturaLevel class="form-select">
+            @foreach (var i in maturaLevels)
+            {
+                <option Value="@i">@i.MaturaLevel1</option>
+            }
+        </InputSelect>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Ocjena mature iz engleskog jezika:</label>
+        <InputSelect @bind-Value=maturaGrade class="form-select">
+            @foreach (var i in maturaGrades)
+            {
+                <option Value="@i">@i.Grade</option>
+            }
+        </InputSelect>
+    </div>
 </form>
 
 @code
 {
-    List<String> studyProgrammes;
-    List<String> years;
-    List<String> maturaLevels;
-    List<String> maturaGrades;
+    List<StudyProgramme> studyProgrammes = new List<StudyProgramme>();
+    List<AcademicYear> years = new List<AcademicYear>();
+    List<MaturaLevel> maturaLevels = new List<MaturaLevel>();
+    List<MaturaGrade> maturaGrades = new List<MaturaGrade>();
 
-    string studyProgramme;
-    string year;
-    string maturaLevel;
-    string maturaGrade;
+    StudyProgramme studyProgramme;
+    AcademicYear year;
+    MaturaLevel maturaLevel;
+    MaturaGrade maturaGrade;
 
     protected override async Task OnInitializedAsync()
     {
-        studyProgrammes = [
-            "Sveučilišni prijediplomski studij Računarstvo  - Izborni blok Programsko inženjerstvo (PI)",
-            "Sveučilišni prijediplomski studij Računarstvo  - Izborni blok Računalno inženjerstvo (RI)",
-            "Sveučilišni prijediplomski studij Elektrotehnika i informacijska tehnologija - 1. i 2. godina smjer Elektrotehnika",
-            "Sveučilišni prijediplomski studij Elektrotehnika i informacijska tehnologija - 1. i 2. godina smjer Informacijske i komunikacijske tehnologije",
-            "Sveučilišni prijediplomski studij Elektrotehnika i informacijska tehnologija - 3. godina Elektrotehnika izborni blok Elektroenergetika (stari studij)",
-            "Sveučilišni prijediplomski studij Elektrotehnika i informacijska tehnologija - 3. godina Elektrotehnika izborni blok Komunikacije i informatika  (stari studij)",
-            "Stručni prijediplomski studij računarstvo",
-            "Stručni prijediplomski studij Elektrotehnika - smjer Automatika",
-            "Stručni prijediplomski studij Elektrotehnika - smjer Elektroenergetika",
-            "Sveučilišni diplomski studij Elektrotehnika, smjer Elektroenergetika - Izborni blok Elektroenergetski sustavi (DEA)",
-            "Sveučilišni diplomski studij Elektrotehnika, smjer Elektroenergetika - Izborni blok Održiva elektroenergetika (DEB)",
-            "Sveučilišni diplomski studij Elektrotehnika, smjer Automatizacija industrijskih sustava - smjer Automatizacija industrijskih sustava",
-            "Sveučilišni diplomski studij Elektrotehnika, smjer Komunikacije i informatika - Izborni blok Komunikacijske tehnologije (DKA)",
-            "Sveučilišni diplomski studij Elektrotehnika, smjer Komunikacije i informatika - Izborni blok Mrežne tehnologije (DKB)",
-            "Sveučilišni diplomski studij Računarstvo - Izborni blok Računalno inženjerstvo (DRA)",
-            "Sveučilišni diplomski studij Računarstvo - Izborni blok Robotika i umjetna inteligencija (DRB)",
-            "Sveučilišni diplomski studij Računarstvo - Izborni blok Programsko inženjerstvo (DRC)",
-            "Sveučilišni diplomski studij Računarstvo - Izborni blok Informacijske i podatkovne znanosti (DRD)",
-            "Sveučilišni diplomski studij Automobilsko računarstvo i komunikacije - Automobilsko računarstvo i komunikacije (DA)",
-            "Sveučilišni diplomski studij Automobilsko računarstvo i komunikacije - Automobilsko računarstvo i komunikacije na engleskom jeziku (DA)"
-        ];
-
-        years = ["1. godina", "2. godina", "3. godina"];
-        maturaLevels = ["A (viša)", "B (niža)"];
-        maturaGrades = ["Odličan (5)", "Vrlo dobar (4)", "Dobar (3)", "Dovoljan (2)", "Nedovoljan (1)"];
+        studyProgrammes = await CollegeService.GetStudyProgrammes();
+        years = await CollegeService.GetAcademicYears();
+        maturaLevels = await MaturaService.GetMaturaLevels();
+        maturaGrades = await MaturaService.GetMaturaGrades();
     }
 }
