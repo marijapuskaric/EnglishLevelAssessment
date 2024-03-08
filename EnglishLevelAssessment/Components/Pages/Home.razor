@@ -10,7 +10,7 @@
     <form>
         <div class="mb-3">
             <label class="form-label">Smjer:</label>
-            <InputSelect @bind-Value=@studyProgramme class="form-select">
+            <InputSelect @bind-Value=@model.StudyProgramme class="form-select">
                 @foreach (var i in studyProgrammes)
                 {
                     <option Value="@i.Id">@i.Programme</option>
@@ -19,7 +19,7 @@
         </div>
         <div class="mb-3">
             <label class="form-label">Godina:</label>
-            <InputSelect @bind-Value=@year class="form-select">
+            <InputSelect @bind-Value=@model.Year class="form-select">
                 @foreach (var i in years)
                 {
                     <option Value="@i.Id">@i.Year</option>
@@ -28,7 +28,7 @@
         </div>
         <div class="mb-3">
             <label class="form-label">Razina mature iz engleskog jezika:</label>
-            <InputSelect @bind-Value=@maturaLevel class="form-select">
+            <InputSelect @bind-Value=@model.MaturaLevel class="form-select">
                 @foreach (var i in maturaLevels)
                 {
                     <option Value="@i.Id">@i.MaturaLevel1</option>
@@ -37,7 +37,7 @@
         </div>
         <div class="mb-3">
             <label class="form-label">Ocjena mature iz engleskog jezika:</label>
-            <InputSelect @bind-Value=@maturaGrade class="form-select">
+            <InputSelect @bind-Value=@model.MaturaGrade class="form-select">
                 @foreach (var i in maturaGrades)
                 {
                     <option Value="@i.Id">@i.Grade</option>
@@ -52,10 +52,10 @@
 {
     <p>@count . @currentQuestion.Question1</p>
     <div class="d-flex flex-column p-2">
-        <InputRadioGroup @bind-Value=@answer >
+        <InputRadioGroup @bind-Value=@answer>
             @foreach(var i in answers)
             {
-                <label class="d-flex p-2"><InputRadio Value="@i.Id" />@i.Answer1</label>
+                <label class="d-flex p-2"><InputRadio Value="@i.Id" />@i.Answer1   @i.IsCorrect</label>
             }
 
         </InputRadioGroup>
@@ -74,28 +74,38 @@
 @if (status == "finish")
 {
     <p>Results!!!</p>
+    <p>@model.StudyProgramme</p>
+    <p>@model.Year</p>
+    <p>@model.MaturaLevel</p>
+    <p>@model.MaturaGrade</p>
+    foreach(var a in model.Answers)
+    {
+        <p>@a</p>
+    }
+
+    <p>@result</p>
 }
 
 @code
 {
     string status;
 
+    EnglishLevelModel model = new EnglishLevelModel();
+
     List<StudyProgramme> studyProgrammes = new List<StudyProgramme>();
     List<AcademicYear> years = new List<AcademicYear>();
     List<MaturaLevel> maturaLevels = new List<MaturaLevel>();
     List<MaturaGrade> maturaGrades = new List<MaturaGrade>();
 
-    int studyProgramme;
-    int year;
-    int maturaLevel;
-    int maturaGrade;
+
 
     List<Question> questions = new List<Question>();
     Question currentQuestion = new Question();
-
+    int count = 0;
     List<Answer> answers = new List<Answer>();
     int answer;
-    int count = 0;
+    int result;
+
 
     protected override async Task OnInitializedAsync()
     {
@@ -104,26 +114,65 @@
         years = await CollegeService.GetAcademicYears();
         maturaLevels = await MaturaService.GetMaturaLevels();
         maturaGrades = await MaturaService.GetMaturaGrades();
+        questions = await QuestionService.GetQuestions();
     }
 
     protected async void OnStart()
-    {
-        questions = await QuestionService.GetQuestions();
-        count = 1;
-        currentQuestion = questions.ElementAt(count - 1);
-        answers = await AnswerService.GetAnswersForQuestion(currentQuestion.Id);
+    {   
+        await LoadQuestion();
         status = "next";
+        StateHasChanged();
+        answer = -1;
     }
 
-    protected async void OnNext()
+    protected async Task LoadQuestion()
     {
         count++;
         currentQuestion = questions.ElementAt(count - 1);
         answers = await AnswerService.GetAnswersForQuestion(currentQuestion.Id);
     }
 
+    protected async void OnNext()
+    {
+        await LoadQuestion();
+        model.Answers.Add(answer);
+        StateHasChanged();
+        answer = -1;
+    }
+
     protected async void OnFinish()
     {
+        model.Answers.Add(answer);
         status = "finish";
+        await CalculateResults();
+        StateHasChanged();
+    }
+
+    protected async Task CalculateResults()
+    {
+        int correctAnswers = 0;
+        foreach(var a in model.Answers)
+        {
+            if (a >= 0)
+            {
+                var userAnswer = await AnswerService.GetAnswerById(a);
+                if (userAnswer.IsCorrect == true)
+                {
+                    correctAnswers++;
+                }
+            }
+        }
+        result = (int)(0.5f + ((100f * correctAnswers)/ count));
+
+    }
+
+
+    public class EnglishLevelModel
+    {
+        public int StudyProgramme;
+        public int Year;
+        public int MaturaLevel;
+        public int MaturaGrade;
+        public List<int> Answers = new List<int>();
     }
 }
