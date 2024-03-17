@@ -19,6 +19,8 @@ public partial class EnglishLevelAssessmentContext : DbContext
 
     public virtual DbSet<Answer> Answers { get; set; }
 
+    public virtual DbSet<LanguageLevel> LanguageLevels { get; set; }
+
     public virtual DbSet<MaturaGrade> MaturaGrades { get; set; }
 
     public virtual DbSet<MaturaLevel> MaturaLevels { get; set; }
@@ -48,16 +50,22 @@ public partial class EnglishLevelAssessmentContext : DbContext
         {
             entity.ToTable("Answer");
 
-            entity.Property(e => e.Answer1)
-                .HasMaxLength(500)
-                .HasColumnName("Answer");
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
+            entity.Property(e => e.Text).HasMaxLength(500);
 
             entity.HasOne(d => d.Question).WithMany(p => p.Answers)
                 .HasForeignKey(d => d.QuestionId)
                 .HasConstraintName("FK_Answer_Question");
+        });
+
+        modelBuilder.Entity<LanguageLevel>(entity =>
+        {
+            entity.ToTable("LanguageLevel");
+
+            entity.Property(e => e.Description).HasMaxLength(500);
+            entity.Property(e => e.Level).HasMaxLength(10);
         });
 
         modelBuilder.Entity<MaturaGrade>(entity =>
@@ -89,10 +97,11 @@ public partial class EnglishLevelAssessmentContext : DbContext
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
-            entity.Property(e => e.LanguageLevel).HasMaxLength(10);
-            entity.Property(e => e.Question1)
-                .HasMaxLength(500)
-                .HasColumnName("Question");
+            entity.Property(e => e.Text).HasMaxLength(500);
+
+            entity.HasOne(d => d.LanguageLevel).WithMany(p => p.Questions)
+                .HasForeignKey(d => d.LanguageLevelId)
+                .HasConstraintName("FK_Question_LanguageLevel");
         });
 
         modelBuilder.Entity<Result>(entity =>
@@ -102,11 +111,14 @@ public partial class EnglishLevelAssessmentContext : DbContext
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
-            entity.Property(e => e.LanguageLevel).HasMaxLength(10);
 
             entity.HasOne(d => d.AcademicYear).WithMany(p => p.Results)
                 .HasForeignKey(d => d.AcademicYearId)
                 .HasConstraintName("FK_Result_AcademicYear");
+
+            entity.HasOne(d => d.LanguageLevel).WithMany(p => p.Results)
+                .HasForeignKey(d => d.LanguageLevelId)
+                .HasConstraintName("FK_Result_LanguageLevel");
 
             entity.HasOne(d => d.MaturaGrade).WithMany(p => p.Results)
                 .HasForeignKey(d => d.MaturaGradeId)

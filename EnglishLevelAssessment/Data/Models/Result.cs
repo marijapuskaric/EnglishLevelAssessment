@@ -19,13 +19,15 @@ public partial class Result
 
     public int? NumberOfCorrectAnswers { get; set; }
 
-    public string? LanguageLevel { get; set; }
+    public int? LanguageLevelId { get; set; }
 
     public DateTime CreatedAt { get; set; }
 
     public bool IsDeleted { get; set; }
 
     public virtual AcademicYear? AcademicYear { get; set; }
+
+    public virtual LanguageLevel? LanguageLevel { get; set; }
 
     public virtual MaturaGrade? MaturaGrade { get; set; }
 
