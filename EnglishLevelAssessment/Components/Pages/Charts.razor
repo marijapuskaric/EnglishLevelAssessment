@@ -1,0 +1,45 @@
+﻿@page "/charts"
+@inject ResultService ResultService
+@inject LanguageLevelService LanguageLevelService
+
+<PageTitle>Charts</PageTitle>
+
+<h3>Charts</h3>
+
+<MudChart ChartType="ChartType.Bar" ChartSeries="@series" XAxisLabels="@XAxisLabels.ToArray()" Width="100%" Height="350px">
+</MudChart>
+
+@code 
+{
+	List<LanguageLevel> languageLevels = new List<LanguageLevel>();
+	List<Result> results = new List<Result>();
+	public List<string> XAxisLabels = new List<string>();
+	public List<ChartSeries> series = new List<ChartSeries>();
+
+	protected override async Task OnInitializedAsync()
+	{
+		languageLevels = await LanguageLevelService.GetLanguageLevels();
+		if (languageLevels != null)
+		{
+			foreach (var level in languageLevels)
+			{
+				if (level.Level != null)
+				{
+					XAxisLabels.Add(level.Level);
+				}
+			}
+		}
+
+		var count = await ResultService.GetNumberOfResultsPerLanguageLevel();
+
+
+		series = new List<ChartSeries>()
+		{
+			new ChartSeries() { Data = count.ToArray() },
+		};
+		StateHasChanged();
+	}
+
+	
+}
+

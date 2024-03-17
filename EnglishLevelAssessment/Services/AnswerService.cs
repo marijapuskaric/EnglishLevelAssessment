@@ -24,7 +24,7 @@ namespace EnglishLevelAssessment.Services
                         .Select(p => new Answer
                         {
                             Id = p.Id,
-                            Answer1 = p.Answer1,
+                            Text = p.Text,
                             QuestionId = p.QuestionId,
                             IsCorrect = p.IsCorrect,
                             CreatedAt = p.CreatedAt,
