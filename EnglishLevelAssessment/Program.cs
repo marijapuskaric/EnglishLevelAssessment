@@ -18,6 +18,7 @@ builder.Services.AddScoped<QuestionService, QuestionService>();
 builder.Services.AddScoped<AnswerService, AnswerService>();
 builder.Services.AddScoped<LanguageLevelService, LanguageLevelService>();
 builder.Services.AddScoped<ResultService, ResultService>();
+builder.Services.AddScoped<UserService, UserService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

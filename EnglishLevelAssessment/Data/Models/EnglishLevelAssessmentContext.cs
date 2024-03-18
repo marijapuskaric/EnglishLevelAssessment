@@ -31,6 +31,8 @@ public partial class EnglishLevelAssessmentContext : DbContext
 
     public virtual DbSet<StudyProgramme> StudyProgrammes { get; set; }
 
+    public virtual DbSet<User> Users { get; set; }
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         => optionsBuilder.UseSqlServer("Name=ConnectionStrings:EnglishLevelAssessment");
 
@@ -141,6 +143,17 @@ public partial class EnglishLevelAssessmentContext : DbContext
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
             entity.Property(e => e.Programme).HasMaxLength(500);
+        });
+
+        modelBuilder.Entity<User>(entity =>
+        {
+            entity.ToTable("User");
+
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.Email).HasMaxLength(500);
+            entity.Property(e => e.Password).HasMaxLength(500);
         });
 
         OnModelCreatingPartial(modelBuilder);

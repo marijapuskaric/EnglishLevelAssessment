@@ -1,0 +1,54 @@
+﻿@page "/login"
+@rendermode InteractiveServer
+@inject UserService UserService
+
+<PageTitle>Login</PageTitle>
+
+<h3>Login</h3>
+
+<form @onsubmit="Submit">
+    <div class="mb-4">
+        <label class="form-label">Email*:</label>
+        <InputText @bind-Value="@email" type="email" class="form-control border-info" placeholder="name@example.com"/>
+    </div>
+    <div class="mb-4">
+        <label class="form-label">Password*:</label>
+        <InputText @bind-Value="@enteredPassword" type="password" class="form-control border-info"/>
+    </div>
+    <div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </div>
+</form>
+
+@if(authenticated == true)
+{
+    <p>You are authenticated</p>
+    <p>@user.Email</p>
+}
+
+@code {
+    string email;
+    string enteredPassword;
+    bool authenticated = false;
+    User user = new User();
+    private async Task Submit()
+    {
+        user = await UserService.GetUserByEmail(email);
+        if (user != null)
+        {
+            authenticated = CheckPassword(user.Password);
+        }
+        email = string.Empty;
+        enteredPassword = string.Empty;
+
+    }
+
+    private bool CheckPassword(string password)
+    {
+        if (enteredPassword == password)
+        {
+            return true;
+        }
+        return false;
+    }
+}
