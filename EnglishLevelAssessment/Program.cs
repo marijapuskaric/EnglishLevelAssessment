@@ -8,6 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("EnglishLevelAssessment");
 
 // Add services to the container.
+builder.Services.AddAntDesign();
 builder.Services.AddMudServices();
 builder.Services.AddDbContext<EnglishLevelAssessmentContext>(options => options.UseSqlServer(connectionString));
 builder.Services.AddRazorComponents()

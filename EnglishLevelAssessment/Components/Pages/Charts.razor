@@ -1,4 +1,5 @@
 ﻿@page "/charts"
+@using Title = AntDesign.Charts.Title
 @inject ResultService ResultService
 @inject LanguageLevelService LanguageLevelService
 
@@ -6,14 +7,16 @@
 
 <h3>Charts</h3>
 
-<MudChart ChartType="ChartType.Bar" ChartSeries="@series" XAxisLabels="@XAxisLabels.ToArray()" Width="100%" Height="350px">
-</MudChart>
+@* <MudChart ChartType="ChartType.Bar" ChartSeries="@series" XAxisLabels="@XAxisLabels.ToArray()" Width="100%" Height="350px" >
+</MudChart> *@
+
+<AntDesign.Charts.Column Data="data3" Config="config"></AntDesign.Charts.Column>
 
 @code 
 {
-	List<LanguageLevel> languageLevels = new List<LanguageLevel>();
-	List<Result> results = new List<Result>();
-	public List<string> XAxisLabels = new List<string>();
+    List<LanguageLevel> languageLevels = new List<LanguageLevel>();
+    List<Data.Models.Result> results = new List<Data.Models.Result>();
+    public List<string> XAxisLabels = new List<string>();
 	public List<ChartSeries> series = new List<ChartSeries>();
 
 	protected override async Task OnInitializedAsync()
@@ -39,7 +42,83 @@
 		};
 		StateHasChanged();
 	}
+    object[] data3 =
+    {
+        new
+        {
+            type = "家具家电",
+            sales = 38
+        },
+        new
+        {
+            type = "粮油副食",
+            sales = 52
+        },
+        new
+        {
+            type = "生鲜水果",
+            sales = 61
+        },
+        new
+        {
+            type = "美容洗护",
+            sales = 145
+        },
+        new
+        {
+            type = "母婴用品",
+            sales = 48
+        },
+        new
+        {
+            type = "进口食品",
+            sales = 38
+        },
+        new
+        {
+            type = "食品饮料",
+            sales = 38
+        },
+        new
+        {
+            type = "家庭清洁",
+            sales = 38
+        }
+    };
 
+    ColumnConfig config = new ColumnConfig
+        {
+            Title = new Title
+            {
+                Visible = true,
+                Text = "基础柱状图-图形标签位置"
+            },
+            Description = new Description
+            {
+                Visible = true,
+                Text = "基础柱状图的图形标签位置可以指定为top-柱形上部，middle-柱形中心，bottom-柱形底部。",
+            },
+            ForceFit = true,
+            Padding = "auto",
+            XField = "type",
+            YField = "sales",
+            Meta = new
+            {
+                Type = new
+                {
+                    Alias = "类别"
+                },
+                Sales = new
+                {
+                    Alias = "销售额(万)"
+                }
+            },
+            Label = new ColumnViewConfigLabel
+            {
+                Visible = true,
+                Position = "middle"  // option: middle / top / bottom
+            }
+        };
 	
 }
 
