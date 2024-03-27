@@ -1,19 +1,32 @@
 ﻿@page "/counter"
 @rendermode InteractiveServer
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
 
 <PageTitle>Counter</PageTitle>
 
 <h1>Counter</h1>
 
-<p role="status">Current count: @currentCount</p>
-
-<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+@if (IsAuthenticated)
+{
+    <h1>Welcome, @UserName!</h1>
+    <p>Here's the special data for authenticated users.</p>
+}
+else
+{
+    <h1>Unauthorized</h1>
+    <p>You must log in to access this page.</p>
+}
 
 @code {
-    private int currentCount = 0;
+    private bool IsAuthenticated => authenticationState?.User.Identity.IsAuthenticated ?? false;
+    private string UserName => authenticationState?.User.Identity.Name;
 
-    private void IncrementCount()
+    private AuthenticationState authenticationState;
+
+    protected override async Task OnInitializedAsync()
     {
-        currentCount++;
+        authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        StateHasChanged();
     }
 }

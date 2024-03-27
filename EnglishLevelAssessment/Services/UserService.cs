@@ -19,7 +19,8 @@ namespace EnglishLevelAssessment.Services
                         {
                             Id = p.Id,
                             Email = p.Email,
-                            Password = p.Password
+                            Password = p.Password,
+                            Role = p.Role
                         }).Where(p => p.Email == email).FirstOrDefaultAsync();
             return user;
         }

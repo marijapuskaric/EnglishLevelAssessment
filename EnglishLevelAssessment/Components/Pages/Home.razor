@@ -7,6 +7,17 @@
 @inject LanguageLevelService LanguageLevelService
 @inject ResultService ResultService
 
+<CascadingAuthenticationState>
+<AuthorizeView>
+    <Authorized>
+        <h1>Hello @context.User.Identity.Name!</h1>
+    </Authorized>
+    <NotAuthorized>
+        <h1>Hello guest</h1>
+    </NotAuthorized>
+</AuthorizeView>
+</CascadingAuthenticationState>
+
 @if (status == "start")
 {
     <form>
@@ -121,6 +132,7 @@
         maturaGrades = await MaturaService.GetMaturaGrades();
         questions = await QuestionService.GetQuestions();
     }
+
 
     protected async void OnStart()
     {   

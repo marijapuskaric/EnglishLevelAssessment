@@ -154,6 +154,7 @@ public partial class EnglishLevelAssessmentContext : DbContext
                 .HasColumnType("datetime");
             entity.Property(e => e.Email).HasMaxLength(500);
             entity.Property(e => e.Password).HasMaxLength(500);
+            entity.Property(e => e.Role).HasMaxLength(20);
         });
 
         OnModelCreatingPartial(modelBuilder);

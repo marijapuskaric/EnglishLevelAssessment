@@ -1,0 +1,55 @@
+﻿@page "/login"
+@rendermode InteractiveServer
+@inject UserService UserService
+@inject AuthenticationStateProvider authenticationStateProvider
+@inject NavigationManager navigationManager
+@inject IJSRuntime js
+
+<PageTitle>Login</PageTitle>
+
+<h3>Login</h3>
+
+
+<div class="mb-4">
+    <label class="form-label">Email*:</label>
+    <InputText @bind-Value="@model.Email" type="email" class="form-control border-info" placeholder="name@example.com"/>
+</div>
+<div class="mb-4">
+    <label class="form-label">Password*:</label>
+    <InputText @bind-Value="@model.Password" type="password" class="form-control border-info" placeholder="Password"/>
+</div>
+<div>
+    <button class="btn btn-primary" @onclick="Login">Login</button>
+</div>
+
+
+
+@code {
+    private class Model
+    {
+        public string Email { get; set; }
+        public string Password { get; set; }
+    }
+
+    private Model model = new Model();
+
+    private async Task Login()
+    {
+        var userAccount = await UserService.GetUserByEmail(model.Email);
+        if (userAccount == null || userAccount.Password != model.Password)
+        {
+            await js.InvokeVoidAsync("alert", "Invalid email or password");
+            return;
+        }
+
+        var customAuthenticationStateProvider = (CustomAuthenticationStateProvider)authenticationStateProvider;
+        await customAuthenticationStateProvider.UpdateAuthenticationState(new UserSession
+            {
+                UserName = userAccount.Email,
+                Role = userAccount.Role
+            });
+        navigationManager.NavigateTo("/", true);
+    }
+
+}
+
