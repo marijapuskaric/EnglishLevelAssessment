@@ -1,37 +1,49 @@
 ﻿@page "/login"
-@rendermode InteractiveServer
+@attribute [RequireAntiforgeryToken(required: false)]
 @inject UserService UserService
-@inject AuthenticationStateProvider authenticationStateProvider
 @inject NavigationManager navigationManager
 @inject IJSRuntime js
 
 <PageTitle>Login</PageTitle>
 
-<h3>Login</h3>
-
-
-<div class="mb-4">
-    <label class="form-label">Email*:</label>
-    <InputText @bind-Value="@model.Email" type="email" class="form-control border-info" placeholder="name@example.com"/>
-</div>
-<div class="mb-4">
-    <label class="form-label">Password*:</label>
-    <InputText @bind-Value="@model.Password" type="password" class="form-control border-info" placeholder="Password"/>
-</div>
-<div>
-    <button class="btn btn-primary" @onclick="Login">Login</button>
-</div>
-
-
-
+<AuthorizeView>
+    <Authorized>
+        <h3>Logout</h3>
+        <form method="post" onsubmit="@(() => Logout())"  @formname="logoutForm">
+            <AntiforgeryToken />
+            <div>
+                <label>Are you sure you want to log out?</label>
+                <button type="submit" class="btn btn-primary">Logout </button>
+            </div>
+        </form>
+    </Authorized>
+    <NotAuthorized>
+        <h3>Login</h3>
+        <form method="post" onsubmit="@(() => Login())" Model="model" @formname="loginForm">
+            <AntiforgeryToken />
+            <div class="mb-4">
+                <h5 class="form-label">Email*:</h5>
+            </div>
+            <div class="mb-4">
+                <InputText @bind-Value="@model.Email" type="email" class="form-control border-info" placeholder="name@example.com" />
+            </div>
+            <div class="mb-4">
+                <label class="form-label">Password*:</label>
+                <InputText @bind-Value="@model.Password" type="password" class="form-control border-info" placeholder="Password" />
+            </div>
+            <div>
+                <button type="submit" class="btn btn-primary">Login </button>
+            </div>
+        </form>
+    </NotAuthorized>
+</AuthorizeView>
+    
 @code {
-    private class Model
-    {
-        public string Email { get; set; }
-        public string Password { get; set; }
-    }
+    [CascadingParameter]
+    public HttpContext HttpContext { get; set; } = default!;
 
-    private Model model = new Model();
+    [SupplyParameterFromForm]
+    private User model { get; set; } = new User();
 
     private async Task Login()
     {
@@ -42,14 +54,23 @@
             return;
         }
 
-        var customAuthenticationStateProvider = (CustomAuthenticationStateProvider)authenticationStateProvider;
-        await customAuthenticationStateProvider.UpdateAuthenticationState(new UserSession
-            {
-                UserName = userAccount.Email,
-                Role = userAccount.Role
-            });
+        var claims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Name, userAccount.Email),
+                    new Claim(ClaimTypes.Role, userAccount.Role)
+                };
+
+        var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+        var principal = new ClaimsPrincipal(identity);
+        await HttpContext.SignInAsync(principal);
+
         navigationManager.NavigateTo("/", true);
     }
 
+    private async Task Logout()
+    {
+        await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+        navigationManager.NavigateTo("/", true);
+    }
 }
 

@@ -1,32 +1,7 @@
 ﻿@page "/counter"
 @rendermode InteractiveServer
-@inject AuthenticationStateProvider AuthenticationStateProvider
-
 
 <PageTitle>Counter</PageTitle>
 
 <h1>Counter</h1>
 
-@if (IsAuthenticated)
-{
-    <h1>Welcome, @UserName!</h1>
-    <p>Here's the special data for authenticated users.</p>
-}
-else
-{
-    <h1>Unauthorized</h1>
-    <p>You must log in to access this page.</p>
-}
-
-@code {
-    private bool IsAuthenticated => authenticationState?.User.Identity.IsAuthenticated ?? false;
-    private string UserName => authenticationState?.User.Identity.Name;
-
-    private AuthenticationState authenticationState;
-
-    protected override async Task OnInitializedAsync()
-    {
-        authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        StateHasChanged();
-    }
-}

@@ -1,5 +1,4 @@
-﻿@inject AuthenticationStateProvider authenticationStateProvider
-<div class="top-row ps-3 navbar navbar-dark">
+﻿<div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
         <a class="navbar-brand" href="">EnglishLevelAssessment</a>
     </div>
@@ -8,16 +7,6 @@
 <input type="checkbox" title="Navigation menu" class="navbar-toggler" />
 
 <div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
-    <AuthorizeView>
-    <Authorized>
-    <h1>Welcome, @context.User.Identity.Name!</h1>
-    <!-- Content for authorized users -->
-</Authorized>
-<NotAuthorized>
-    <h1>Unauthorized</h1>
-    <!-- Content for unauthorized users -->
-</NotAuthorized>
-</AuthorizeView>
     <nav class="flex-column">
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
@@ -36,8 +25,7 @@
                 <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Weather
             </NavLink>
         </div>
-        <CascadingAuthenticationState>
-        <AuthorizeView Roles="Admin">
+        <AuthorizeView>
             <Authorized>
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="charts">
@@ -45,24 +33,7 @@
                     </NavLink>
                 </div>
             </Authorized>
-        </AuthorizeView>
-        </CascadingAuthenticationState>
-
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="login">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Admin login
-            </NavLink>
-        </div>
+        </AuthorizeView>   
     </nav>
 </div>
-
-@code
-{
-    private AuthenticationState authenticationState;
-    protected override async Task OnInitializedAsync()
-    {
-        authenticationState = await authenticationStateProvider.GetAuthenticationStateAsync();
-        StateHasChanged();
-    }
-}
 

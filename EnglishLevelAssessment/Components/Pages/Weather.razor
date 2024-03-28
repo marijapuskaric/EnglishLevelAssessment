@@ -1,31 +1,9 @@
 ﻿@page "/weather"
 @attribute [StreamRendering]
-@inject AuthenticationStateProvider authStateProvider
 
 <PageTitle>Weather</PageTitle>
 <h1>Weather</h1>
 
-@if (user != null && user.Identity != null)
-{
-    <h1>Hello, @(user.Identity.Name ?? "nema")</h1>
-    <p>Is Authenticated: @user.Identity.IsAuthenticated</p>
-}
-else
-{
-    <p>User is not authenticated.</p>
-}
-
-
-<CascadingAuthenticationState>
-<AuthorizeView>
-    <Authorized>
-        <h1>Hello @context.User.Identity.Name!</h1>
-    </Authorized>
-    <NotAuthorized>
-        <h1>Hello guest</h1>
-    </NotAuthorized>
-</AuthorizeView>
-</CascadingAuthenticationState>
 <CascadingAuthenticationState>
 <AuthorizeView Roles="Admin">
     <Authorized>
@@ -65,11 +43,13 @@ else
 </AuthorizeView>
 </CascadingAuthenticationState>
 
-
-
 @code {
     private WeatherForecast[]? forecasts;
     private ClaimsPrincipal user = new ClaimsPrincipal();
+    private bool IsAuthenticated => authenticationState?.User.Identity.IsAuthenticated ?? false;
+    private string UserName => authenticationState?.User.Identity.Name;
+
+    private AuthenticationState authenticationState;
 
     protected override async Task OnInitializedAsync()
     {
@@ -84,20 +64,7 @@ else
             TemperatureC = Random.Shared.Next(-20, 55),
             Summary = summaries[Random.Shared.Next(summaries.Length)]
         }).ToArray();
-
-        
-    }
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            var authState = await authStateProvider.GetAuthenticationStateAsync();
-            user = authState.User;
-
-            StateHasChanged();
-        }
-    }
+    }   
 
     private class WeatherForecast
     {

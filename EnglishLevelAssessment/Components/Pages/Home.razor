@@ -7,17 +7,6 @@
 @inject LanguageLevelService LanguageLevelService
 @inject ResultService ResultService
 
-<CascadingAuthenticationState>
-<AuthorizeView>
-    <Authorized>
-        <h1>Hello @context.User.Identity.Name!</h1>
-    </Authorized>
-    <NotAuthorized>
-        <h1>Hello guest</h1>
-    </NotAuthorized>
-</AuthorizeView>
-</CascadingAuthenticationState>
-
 @if (status == "start")
 {
     <form>
@@ -64,7 +53,7 @@
     </form>
     @if(result.StudyProgrammeId != null && result.AcademicYearId != null && result.MaturaLevelId != null && result.MaturaGradeId != null)
     {
-        <button @onclick="OnStart" class="btn btn-primary">Start</button>
+        <button  @onclick="OnStart" class="btn btn-primary">Start</button>
     }
     else
     {
@@ -132,7 +121,6 @@
         maturaGrades = await MaturaService.GetMaturaGrades();
         questions = await QuestionService.GetQuestions();
     }
-
 
     protected async void OnStart()
     {   

@@ -1,7 +1,8 @@
-using EnglishLevelAssessment.Authentication;
+
 using EnglishLevelAssessment.Components;
 using EnglishLevelAssessment.Data.Models;
 using EnglishLevelAssessment.Services;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 using Microsoft.EntityFrameworkCore;
@@ -12,9 +13,15 @@ var connectionString = builder.Configuration.GetConnectionString("EnglishLevelAs
 
 // Add services to the container.
 builder.Services.AddAuthenticationCore();
-builder.Services.AddScoped<ProtectedSessionStorage>();
 builder.Services.AddCascadingAuthenticationState();
-builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
+builder.Services.AddAntiforgery();
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(x =>
+    {
+        x.LoginPath = "/login";
+    });
+builder.Services.AddAuthorization();
+
 builder.Services.AddMudServices();
 builder.Services.AddDbContext<EnglishLevelAssessmentContext>(options => options.UseSqlServer(connectionString));
 builder.Services.AddRazorComponents().AddInteractiveServerComponents();
@@ -41,6 +48,8 @@ app.UseStaticFiles();
 app.UseAntiforgery();
 
 app.UseAuthentication();
+app.UseAuthorization();
+app.UseAntiforgery();
 
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
