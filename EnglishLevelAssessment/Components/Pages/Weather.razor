@@ -2,42 +2,54 @@
 @attribute [StreamRendering]
 
 <PageTitle>Weather</PageTitle>
-
 <h1>Weather</h1>
 
-<p>This component demonstrates showing data.</p>
+<CascadingAuthenticationState>
+<AuthorizeView Roles="Admin">
+    <Authorized>
+        
 
-@if (forecasts == null)
-{
-    <p><em>Loading...</em></p>
-}
-else
-{
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Date</th>
-                <th>Temp. (C)</th>
-                <th>Temp. (F)</th>
-                <th>Summary</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var forecast in forecasts)
-            {
-                <tr>
-                    <td>@forecast.Date.ToShortDateString()</td>
-                    <td>@forecast.TemperatureC</td>
-                    <td>@forecast.TemperatureF</td>
-                    <td>@forecast.Summary</td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
+        <p>This component demonstrates showing data.</p>
+
+        @if (forecasts == null)
+        {
+            <p><em>Loading...</em></p>
+        }
+        else
+        {
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Temp. (C)</th>
+                        <th>Temp. (F)</th>
+                        <th>Summary</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var forecast in forecasts)
+                    {
+                        <tr>
+                            <td>@forecast.Date.ToShortDateString()</td>
+                            <td>@forecast.TemperatureC</td>
+                            <td>@forecast.TemperatureF</td>
+                            <td>@forecast.Summary</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </Authorized>
+</AuthorizeView>
+</CascadingAuthenticationState>
 
 @code {
     private WeatherForecast[]? forecasts;
+    private ClaimsPrincipal user = new ClaimsPrincipal();
+    private bool IsAuthenticated => authenticationState?.User.Identity.IsAuthenticated ?? false;
+    private string UserName => authenticationState?.User.Identity.Name;
+
+    private AuthenticationState authenticationState;
 
     protected override async Task OnInitializedAsync()
     {
@@ -52,7 +64,7 @@ else
             TemperatureC = Random.Shared.Next(-20, 55),
             Summary = summaries[Random.Shared.Next(summaries.Length)]
         }).ToArray();
-    }
+    }   
 
     private class WeatherForecast
     {
@@ -62,3 +74,5 @@ else
         public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
     }
 }
+
+
