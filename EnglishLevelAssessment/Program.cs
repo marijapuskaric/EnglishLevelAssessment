@@ -1,6 +1,10 @@
+
 using EnglishLevelAssessment.Components;
 using EnglishLevelAssessment.Data.Models;
 using EnglishLevelAssessment.Services;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 using Microsoft.EntityFrameworkCore;
 using MudBlazor.Services;
 
@@ -8,16 +12,26 @@ var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("EnglishLevelAssessment");
 
 // Add services to the container.
+builder.Services.AddAuthenticationCore();
+builder.Services.AddCascadingAuthenticationState();
+builder.Services.AddAntiforgery();
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(x =>
+    {
+        x.LoginPath = "/login";
+    });
+builder.Services.AddAuthorization();
+
 builder.Services.AddMudServices();
 builder.Services.AddDbContext<EnglishLevelAssessmentContext>(options => options.UseSqlServer(connectionString));
-builder.Services.AddRazorComponents()
-    .AddInteractiveServerComponents();
+builder.Services.AddRazorComponents().AddInteractiveServerComponents();
 builder.Services.AddScoped<MaturaService, MaturaService>();
 builder.Services.AddScoped<CollegeService, CollegeService>();
 builder.Services.AddScoped<QuestionService, QuestionService>();
 builder.Services.AddScoped<AnswerService, AnswerService>();
 builder.Services.AddScoped<LanguageLevelService, LanguageLevelService>();
 builder.Services.AddScoped<ResultService, ResultService>();
+builder.Services.AddScoped<UserService, UserService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -31,6 +45,10 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseStaticFiles();
+app.UseAntiforgery();
+
+app.UseAuthentication();
+app.UseAuthorization();
 app.UseAntiforgery();
 
 app.MapRazorComponents<App>()
