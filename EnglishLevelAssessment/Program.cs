@@ -3,10 +3,7 @@ using EnglishLevelAssessment.Components;
 using EnglishLevelAssessment.Data.Models;
 using EnglishLevelAssessment.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 using Microsoft.EntityFrameworkCore;
-using MudBlazor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("EnglishLevelAssessment");
@@ -22,7 +19,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     });
 builder.Services.AddAuthorization();
 
-builder.Services.AddMudServices();
+builder.Services.AddBlazorBootstrap();
 builder.Services.AddDbContext<EnglishLevelAssessmentContext>(options => options.UseSqlServer(connectionString));
 builder.Services.AddRazorComponents().AddInteractiveServerComponents();
 builder.Services.AddScoped<MaturaService, MaturaService>();

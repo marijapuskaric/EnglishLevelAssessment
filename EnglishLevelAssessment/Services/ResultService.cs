@@ -29,21 +29,66 @@ namespace EnglishLevelAssessment.Services
             await _context.SaveChangesAsync();
         }
 
-        public async Task<List<Result>> GetResults()
+        public async Task<List<Result>> GetOnlineTestResultsByLanguageLevel(int id)
         {
-            var list = await _context.Results.AsNoTracking().ToListAsync();
+            var list = await _context.Results.Where(p => p.LanguageLevelId == id).ToListAsync();
             return list;
         }
 
-        public async Task<List<double>> GetNumberOfResultsPerLanguageLevel()
-        {
-            var count = new List<double>();
-            var list = await _context.Results.GroupBy(p => p.LanguageLevelId).ToListAsync();
-            foreach (var result in list) 
-            {
-                count.Add(result.Count());
-            }
-            return count;
-        }
-    }
+		public async Task<List<Result>> GetMaturaResultsByMaturaLevelAndGrade(int maturaLevelId, int maturaGradeId)
+		{
+			var list = await _context.Results.Where(p => p.MaturaLevelId == maturaLevelId && p.MaturaGradeId == maturaGradeId).ToListAsync();
+			return list;
+		}
+
+		
+
+		public async Task<List<Result>> GetResultsByLanguageLevelAndStudyProgramme(int languageLevelId, string studyProgramme)
+		{
+			var list = await _context.Results.Where(p => p.LanguageLevelId == languageLevelId)
+			.Join(_context.StudyProgrammes,
+				  t1 => t1.StudyProgrammeId,
+				  t2 => t2.Id,
+				  (t1, t2) => new { Results = t1, StudyProgramme = t2 })
+			.Where(join => join.StudyProgramme.Programme.Contains(studyProgramme))
+			.Select(join => join.Results)
+			.AsNoTracking()
+			.ToListAsync();
+			return list;
+		}
+
+		public async Task<double> GetNumberOfMaturaResultsByLanguageLevel(int id)
+		{
+			double num = 0;
+			if (id == 1)
+			{
+				num = (await GetMaturaResultsByMaturaLevelAndGrade(2, 5)).Count;
+				num += (await GetMaturaResultsByMaturaLevelAndGrade(2, 4)).Count;
+			}
+			else if (id == 2)
+			{
+				num = (await GetMaturaResultsByMaturaLevelAndGrade(2, 3)).Count;
+				num += (await GetMaturaResultsByMaturaLevelAndGrade(2, 2)).Count;
+			}
+			else if (id == 3)
+			{
+				num = (await GetMaturaResultsByMaturaLevelAndGrade(2, 1)).Count;
+				num += (await GetMaturaResultsByMaturaLevelAndGrade(1, 5)).Count;
+			}
+			else if (id == 4)
+			{
+				num = (await GetMaturaResultsByMaturaLevelAndGrade(1, 4)).Count;
+				num += (await GetMaturaResultsByMaturaLevelAndGrade(1, 3)).Count;
+			}
+			else if (id == 5)
+			{
+				num = (await GetMaturaResultsByMaturaLevelAndGrade(1, 2)).Count;
+			}
+			else if (id == 6)
+			{
+				num = (await GetMaturaResultsByMaturaLevelAndGrade(1, 1)).Count;
+			}
+			return num;
+		}
+	}
 }

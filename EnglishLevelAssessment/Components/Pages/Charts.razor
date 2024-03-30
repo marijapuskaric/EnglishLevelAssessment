@@ -1,26 +1,39 @@
 ﻿@page "/charts"
-@using Title = AntDesign.Charts.Title
 @inject ResultService ResultService
 @inject LanguageLevelService LanguageLevelService
+@rendermode InteractiveServer
 
 <PageTitle>Charts</PageTitle>
 
 <h3>Charts</h3>
 
-@* <MudChart ChartType="ChartType.Bar" ChartSeries="@series" XAxisLabels="@XAxisLabels.ToArray()" Width="100%" Height="350px" >
-</MudChart> *@
-
-<AntDesign.Charts.Column Data="data3" Config="config"></AntDesign.Charts.Column>
+<BarChart @ref="barChart" Width="800" Class="mb-4" />
+<Button Type="BlazorBootstrap.ButtonType.Button" Color="ButtonColor.Primary" Size="BlazorBootstrap.Size.Small" @onclick="async () => await ShowBarChartOnlineTestMatura()"> Online test / Matura </Button>
+<Button Type="BlazorBootstrap.ButtonType.Button" Color="ButtonColor.Primary" Size="BlazorBootstrap.Size.Small" @onclick="async () => await ShowBarChartElektrotehnikaRacunarstvo()"> Računarstvo / Elektrotehnika </Button>
+<Button Type="BlazorBootstrap.ButtonType.Button" Color="ButtonColor.Primary" Size="BlazorBootstrap.Size.Small" @onclick="async () => await ShowBarChartPrijediplomskiDiplomski()"> Prijediplomski / Diplomski </Button>
 
 @code 
 {
-    List<LanguageLevel> languageLevels = new List<LanguageLevel>();
-    List<Data.Models.Result> results = new List<Data.Models.Result>();
-    public List<string> XAxisLabels = new List<string>();
-	public List<ChartSeries> series = new List<ChartSeries>();
+	List<LanguageLevel> languageLevels = new List<LanguageLevel>();
+	List<Data.Models.Result> results = new List<Data.Models.Result>();
 
-	protected override async Task OnInitializedAsync()
+	private BarChart barChart = default!;
+	private BarChartOptions barChartOptions = default!;
+	private ChartData chartData = default!;
+
+	protected override async Task OnAfterRenderAsync(bool firstRender)
 	{
+		if (firstRender)
+		{
+			await CreateBarChartOnlineTestMatura();
+			await barChart.InitializeAsync(chartData, barChartOptions);
+		}
+		await base.OnAfterRenderAsync(firstRender);
+	}
+
+	private async Task ShowBarChartElektrotehnikaRacunarstvo()
+	{
+		List<string> XAxisLabels = new List<string>();
 		languageLevels = await LanguageLevelService.GetLanguageLevels();
 		if (languageLevels != null)
 		{
@@ -33,92 +46,147 @@
 			}
 		}
 
-		var count = await ResultService.GetNumberOfResultsPerLanguageLevel();
+		var datasets = new List<IChartDataset>();
+		datasets.Add(await GetChartDatasetStudyProgramme("Računarstvo", 0));
+		datasets.Add(await GetChartDatasetStudyProgramme("Elektrotehnika", 1));
 
-
-		series = new List<ChartSeries>()
-		{
-			new ChartSeries() { Data = count.ToArray() },
-		};
+		chartData = new ChartData { Labels = XAxisLabels, Datasets = datasets };
+		barChartOptions = new BarChartOptions { Responsive = true, Interaction = new Interaction { Mode = InteractionMode.Index } };
+		await barChart.UpdateAsync(chartData, barChartOptions);
 		StateHasChanged();
 	}
-    object[] data3 =
-    {
-        new
-        {
-            type = "家具家电",
-            sales = 38
-        },
-        new
-        {
-            type = "粮油副食",
-            sales = 52
-        },
-        new
-        {
-            type = "生鲜水果",
-            sales = 61
-        },
-        new
-        {
-            type = "美容洗护",
-            sales = 145
-        },
-        new
-        {
-            type = "母婴用品",
-            sales = 48
-        },
-        new
-        {
-            type = "进口食品",
-            sales = 38
-        },
-        new
-        {
-            type = "食品饮料",
-            sales = 38
-        },
-        new
-        {
-            type = "家庭清洁",
-            sales = 38
-        }
-    };
 
-    ColumnConfig config = new ColumnConfig
-        {
-            Title = new Title
-            {
-                Visible = true,
-                Text = "基础柱状图-图形标签位置"
-            },
-            Description = new Description
-            {
-                Visible = true,
-                Text = "基础柱状图的图形标签位置可以指定为top-柱形上部，middle-柱形中心，bottom-柱形底部。",
-            },
-            ForceFit = true,
-            Padding = "auto",
-            XField = "type",
-            YField = "sales",
-            Meta = new
-            {
-                Type = new
-                {
-                    Alias = "类别"
-                },
-                Sales = new
-                {
-                    Alias = "销售额(万)"
-                }
-            },
-            Label = new ColumnViewConfigLabel
-            {
-                Visible = true,
-                Position = "middle"  // option: middle / top / bottom
-            }
-        };
-	
+	private async Task ShowBarChartPrijediplomskiDiplomski()
+	{
+		List<string> XAxisLabels = new List<string>();
+		languageLevels = await LanguageLevelService.GetLanguageLevels();
+		if (languageLevels != null)
+		{
+			foreach (var level in languageLevels)
+			{
+				if (level.Level != null)
+				{
+					XAxisLabels.Add(level.Level);
+				}
+			}
+		}
+
+		var datasets = new List<IChartDataset>();
+		datasets.Add(await GetChartDatasetStudyProgramme("Prijediplomski", 0));
+		datasets.Add(await GetChartDatasetStudyProgramme("Diplomski", 1));
+
+		chartData = new ChartData { Labels = XAxisLabels, Datasets = datasets };
+		barChartOptions = new BarChartOptions { Responsive = true, Interaction = new Interaction { Mode = InteractionMode.Index } };
+		await barChart.UpdateAsync(chartData, barChartOptions);
+		StateHasChanged();
+	}
+
+	private async Task ShowBarChartOnlineTestMatura()
+	{
+		await CreateBarChartOnlineTestMatura();
+		await barChart.UpdateAsync(chartData, barChartOptions);
+		StateHasChanged();
+	}
+
+	private async Task CreateBarChartOnlineTestMatura()
+	{
+		List<string> XAxisLabels = new List<string>();
+		languageLevels = await LanguageLevelService.GetLanguageLevels();
+		if (languageLevels != null)
+		{
+			foreach (var level in languageLevels)
+			{
+				if (level.Level != null)
+				{
+					XAxisLabels.Add(level.Level);
+				}
+			}
+		}
+
+		var datasets = new List<IChartDataset>();
+		datasets.Add(await GetChartDatasetOnlineTest());
+		datasets.Add(await GetChartDatasetMatura());
+
+		chartData = new ChartData { Labels = XAxisLabels, Datasets = datasets };
+		barChartOptions = new BarChartOptions { Responsive = true, Interaction = new Interaction { Mode = InteractionMode.Index } };
+	}
+
+	private async Task<BarChartDataset> GetChartDatasetOnlineTest()
+	{
+		List<double> chartOnlineTestData = new List<double>();
+		if (languageLevels != null)
+		{
+			foreach (var level in languageLevels)
+			{
+				if (level.Id != null)
+				{
+					var list = await ResultService.GetOnlineTestResultsByLanguageLevel(level.Id);
+					chartOnlineTestData.Add(list.Count());
+				}
+			}
+		}
+
+		var c = ColorBuilder.CategoricalTwelveColors[0].ToColor();
+		return new BarChartDataset()
+			{
+				Label = $"Online test",
+				Data = chartOnlineTestData,
+				BackgroundColor = new List<string> { c.ToRgbString() },
+				BorderColor = new List<string> { c.ToRgbString() },
+				BorderWidth = new List<double> { 0 },
+			};
+	}
+
+	private async Task<BarChartDataset> GetChartDatasetMatura()
+	{
+		List<double> chartMaturaData = new List<double>();
+		if (languageLevels != null)
+		{
+			foreach (var level in languageLevels)
+			{
+				if (level.Id != null)
+				{
+					var list = await ResultService.GetNumberOfMaturaResultsByLanguageLevel(level.Id);
+					chartMaturaData.Add(list);
+				}
+			}
+		}
+
+		var c = ColorBuilder.CategoricalTwelveColors[1].ToColor();
+		return new BarChartDataset()
+			{
+				Label = $"Matura",
+				Data = chartMaturaData,
+				BackgroundColor = new List<string> { c.ToRgbString() },
+				BorderColor = new List<string> { c.ToRgbString() },
+				BorderWidth = new List<double> { 0 },
+			};
+	}
+
+	private async Task<BarChartDataset> GetChartDatasetStudyProgramme(string programme, int color)
+	{
+		List<double> chartProgrammeData = new List<double>();
+		if (languageLevels != null)
+		{
+			foreach (var level in languageLevels)
+			{
+				if (level.Id != null)
+				{
+					var list = await ResultService.GetResultsByLanguageLevelAndStudyProgramme(level.Id, programme);
+					chartProgrammeData.Add(list.Count);
+				}
+			}
+		}
+
+		var c = ColorBuilder.CategoricalTwelveColors[color].ToColor();
+		return new BarChartDataset()
+			{
+				Label = $"{programme}",
+				Data = chartProgrammeData,
+				BackgroundColor = new List<string> { c.ToRgbString() },
+				BorderColor = new List<string> { c.ToRgbString() },
+				BorderWidth = new List<double> { 0 },
+			};
+	}
 }
 
