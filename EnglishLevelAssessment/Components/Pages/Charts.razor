@@ -7,10 +7,34 @@
 
 <h3>Charts</h3>
 
-<BarChart @ref="barChart" Width="800" Class="mb-4" />
-<Button Type="BlazorBootstrap.ButtonType.Button" Color="ButtonColor.Primary" Size="BlazorBootstrap.Size.Small" @onclick="async () => await ShowBarChartOnlineTestMatura()"> Online test / Matura </Button>
-<Button Type="BlazorBootstrap.ButtonType.Button" Color="ButtonColor.Primary" Size="BlazorBootstrap.Size.Small" @onclick="async () => await ShowBarChartElektrotehnikaRacunarstvo()"> Računarstvo / Elektrotehnika </Button>
-<Button Type="BlazorBootstrap.ButtonType.Button" Color="ButtonColor.Primary" Size="BlazorBootstrap.Size.Small" @onclick="async () => await ShowBarChartPrijediplomskiDiplomski()"> Prijediplomski / Diplomski </Button>
+<div >
+	<div class="d-flex justify-content-center">
+		<BarChart @ref="barChart" Width="800" Class="mb-4" />
+	</div>
+	<div class="d-flex flex-row justify-content-center">
+		<Button Type="BlazorBootstrap.ButtonType.Button" 
+				Color="ButtonColor.Primary" 
+				Size="BlazorBootstrap.Size.Small" 
+				@onclick="async () => await ShowBarChartOnlineTestMatura()"
+				Class="m-2"> 
+				Online test / Matura 
+		</Button>
+		<Button Type="BlazorBootstrap.ButtonType.Button" 
+				Color="ButtonColor.Primary" 
+				Size="BlazorBootstrap.Size.Small" 
+				@onclick="async () => await ShowBarChartElektrotehnikaRacunarstvo()"
+				Class="m-2">
+				Računarstvo / Elektrotehnika 
+		</Button>
+		<Button Type="BlazorBootstrap.ButtonType.Button" 
+				Color="ButtonColor.Primary" 
+				Size="BlazorBootstrap.Size.Small" 
+				@onclick="async () => await ShowBarChartPrijediplomskiDiplomski()"
+				Class="m-2">
+				Prijediplomski / Diplomski 
+		</Button>
+	</div>
+</div>
 
 @code 
 {
@@ -52,6 +76,11 @@
 
 		chartData = new ChartData { Labels = XAxisLabels, Datasets = datasets };
 		barChartOptions = new BarChartOptions { Responsive = true, Interaction = new Interaction { Mode = InteractionMode.Index } };
+		barChartOptions.Scales.X.Title.Text = "CEFR razine";
+		barChartOptions.Scales.X.Title.Display = true;
+
+		barChartOptions.Scales.Y.Title.Text = "Broj ispitanika";
+		barChartOptions.Scales.Y.Title.Display = true;
 		await barChart.UpdateAsync(chartData, barChartOptions);
 		StateHasChanged();
 	}
@@ -77,6 +106,11 @@
 
 		chartData = new ChartData { Labels = XAxisLabels, Datasets = datasets };
 		barChartOptions = new BarChartOptions { Responsive = true, Interaction = new Interaction { Mode = InteractionMode.Index } };
+		barChartOptions.Scales.X.Title.Text = "CEFR razine";
+		barChartOptions.Scales.X.Title.Display = true;
+
+		barChartOptions.Scales.Y.Title.Text = "Broj ispitanika";
+		barChartOptions.Scales.Y.Title.Display = true;
 		await barChart.UpdateAsync(chartData, barChartOptions);
 		StateHasChanged();
 	}
@@ -109,6 +143,11 @@
 
 		chartData = new ChartData { Labels = XAxisLabels, Datasets = datasets };
 		barChartOptions = new BarChartOptions { Responsive = true, Interaction = new Interaction { Mode = InteractionMode.Index } };
+		barChartOptions.Scales.X.Title.Text = "CEFR razine";
+		barChartOptions.Scales.X.Title.Display = true;
+
+		barChartOptions.Scales.Y.Title.Text = "Broj ispitanika";
+		barChartOptions.Scales.Y.Title.Display = true;
 	}
 
 	private async Task<BarChartDataset> GetChartDatasetOnlineTest()
