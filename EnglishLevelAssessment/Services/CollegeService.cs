@@ -18,10 +18,36 @@ namespace EnglishLevelAssessment.Services
             return list;
         }
 
+        public async Task<List<AcademicYear>> GetUndergraduateAcademicYears()
+        {
+            var list = await _context.AcademicYears.Where(p => p.Undergraduate == true).AsNoTracking().ToListAsync();
+            return list;
+        }
+
+        public async Task<List<AcademicYear>> GetGraduateAcademicYears()
+        {
+            var list = await _context.AcademicYears.Where(p => p.Graduate == true).AsNoTracking().ToListAsync();
+            return list;
+        }
+
+
         public async Task<List<StudyProgramme>> GetStudyProgrammes()
         {
             var list = await _context.StudyProgrammes.AsNoTracking().ToListAsync();
             return list;
+        }
+
+        public async Task<StudyProgramme> GetStudyProgrammeById(int id)
+        {
+            var studyProgramme = await _context.StudyProgrammes
+                        .Select(p => new StudyProgramme
+                        {
+                            Id = p.Id,
+                            Programme = p.Programme,
+                            CreatedAt = p.CreatedAt,
+                            IsDeleted = p.IsDeleted
+                        }).Where(p => p.Id == id).FirstOrDefaultAsync();
+            return studyProgramme;
         }
     }
 }

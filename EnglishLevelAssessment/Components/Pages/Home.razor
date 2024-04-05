@@ -7,89 +7,119 @@
 @inject LanguageLevelService LanguageLevelService
 @inject ResultService ResultService
 
-@if (status == "start")
-{
-    <form>
-        <div class="mb-3">
-            <label class="form-label">Smjer:</label>
-            <InputSelect @bind-Value=@result.StudyProgrammeId class="form-select" >
-                <option selected disabled hidden>Odaberi smjer</option>
-                @foreach (var i in studyProgrammes)
-                {
-                    <option Value="@i.Id">@i.Programme</option>
-                }
-            </InputSelect>
-        </div>
-        <div class="mb-3">
-            <label class="form-label">Godina:</label>
-            <InputSelect @bind-Value=@result.AcademicYearId class="form-select">
-                <option selected disabled hidden>Odaberi godinu</option>
-                @foreach (var i in years)
-                {
-                    <option Value="@i.Id">@i.Year</option>
-                }
-            </InputSelect>
-        </div>
-        <div class="mb-3">
-            <label class="form-label">Razina mature iz engleskog jezika:</label>
-            <InputSelect @bind-Value=@result.MaturaLevelId class="form-select">
-                <option selected disabled hidden>Odaberi razinu mature iz engleskog jezika</option>
-                @foreach (var i in maturaLevels)
-                {
-                    <option Value="@i.Id">@i.MaturaLevel1</option>
-                }
-            </InputSelect>
-        </div>
-        <div class="mb-3">
-            <label class="form-label">Ocjena mature iz engleskog jezika:</label>
-            <InputSelect @bind-Value=@result.MaturaGradeId class="form-select">
-                <option selected disabled hidden>Odaberi ocjenu mature iz engleskog jezika</option>
-                @foreach (var i in maturaGrades)
-                {
-                    <option Value="@i.Id">@i.Grade</option>
-                }
-            </InputSelect>
-        </div>
-    </form>
-    @if(result.StudyProgrammeId != null && result.AcademicYearId != null && result.MaturaLevelId != null && result.MaturaGradeId != null)
-    {
-        <button  @onclick="OnStart" class="btn btn-primary">Start</button>
-    }
-    else
-    {
-        <button @onclick="OnStart" class="btn btn-primary" disabled>Start</button>
-    } 
-}
+<div class="m-1 ms-5 me-5">
+    <p class="m-0 mb-1">Ova aplikacija je izrađena kao diplomski rad na Fakultetu elektrotehnike, računarstva i informacijskih tehnologija Osijek</p>
+    <p class="m-0 mb-1">Cilj aplikacije je procjeniti razinu znanja engleskog jezika prema zajedničkom europskom referentnom okviru za jezike (CEFR-u)</p>
+    <p class="m-0 mb-1">Prema CEFR-u postoji 6 razina znanja jezika:</p>
+    <ul>
+        <li>A1 - Begginers</li>
+        <li>A2 - Pre-intermediate</li>
+        <li>B1 - Intermediate</li>
+        <li>B2 - Upper-intermediate</li>
+        <li>C1 - Advanced</li>
+        <li>C2 - Proficiency</li>
+    </ul>
+    <p class="m-0 mb-1">Pomoću ove aplikacije će se provesti istraživanje poznavanja engleskog jezika na FERIT-u, te će se dobiveni rezultati usporediti s rezultatima državne mature</p>
+    <p class="m-0 mb-1">
+        Kako bi se započeo test za provjeru razine znanja potrebno je odabrati smjer i godinu studiranja te razinu i ocjenu državne mature.
+        Nakon toga počinje rješavanje testa koji se sastoji od 30 pitanja višestrukoga odabira pri čemu nema mogućnosti vraćanja na prethodno pitanje. 
+       Završetkom testa dobiva se procijenjena razina znanja engleskog jezika. </p>
+</div>
 
-@if (status == "next")
-{
-    <p>@count . @currentQuestion.Text</p>
-    <div class="d-flex flex-column p-2">
-        <InputRadioGroup @bind-Value=@answer>
-            @foreach(var i in answers)
-            {
-                <label class="d-flex p-2"><InputRadio Value="@i.Id" class="p-2"/>@i.Text   @i.IsCorrect</label>
-            }
+<div class="m-2 ms-5 me-5 p-3 border border-secondary-subtle rounded bg-light">
+    @if (status == "start")
+    {
+        <form>
+            <div class="mb-3">
+                <label class="form-label">Smjer:</label>
+                <select class="form-select" aria-label="Default select example" @onchange="OnChange">
+                    <option selected disabled hidden>Odaberi smjer</option>
+                    @foreach (var i in studyProgrammes)
+                    {
+                        <option Value="@i.Id">@i.Programme</option>
+                    }
+                </select>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Godina:</label>
+                <InputSelect @bind-Value=@result.AcademicYearId class="form-select">
+                    <option selected disabled hidden>Odaberi godinu</option>
+                    @foreach (var i in years)
+                    {
+                        <option Value="@i.Id">@i.Year</option>
+                    }
+                </InputSelect>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Razina mature iz engleskog jezika:</label>
+                <InputSelect @bind-Value=@result.MaturaLevelId class="form-select">
+                    <option selected disabled hidden>Odaberi razinu mature iz engleskog jezika</option>
+                    @foreach (var i in maturaLevels)
+                    {
+                        <option Value="@i.Id">@i.MaturaLevel1</option>
+                    }
+                </InputSelect>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Ocjena mature iz engleskog jezika:</label>
+                <InputSelect @bind-Value=@result.MaturaGradeId class="form-select">
+                    <option selected disabled hidden>Odaberi ocjenu mature iz engleskog jezika</option>
+                    @foreach (var i in maturaGrades)
+                    {
+                        <option Value="@i.Id">@i.Grade</option>
+                    }
+                </InputSelect>
+            </div>
+        </form>
+        @if(result.StudyProgrammeId != null && result.AcademicYearId != null && result.MaturaLevelId != null && result.MaturaGradeId != null)
+        {
+            <button  @onclick="OnStart" class="btn btn-primary">Start</button>
+        }
+        else
+        {
+            <button @onclick="OnStart" class="btn btn-primary" disabled>Start</button>
+        } 
+    }
 
-        </InputRadioGroup>
-    </div>
-    if (count == questions.Count())
+    @if (status == "next")
     {
-        <button @onclick="OnFinish" class="btn btn-primary">Finish</button>
-    }
-    else
-    {
-        <button @onclick="OnNext" class="btn btn-primary">Next</button>
-    }
+        <p>@count. @currentQuestion.Text</p>
+        <div class="d-flex flex-column p-2">
+            <InputRadioGroup @bind-Value=@answer>
+                @foreach(var i in answers)
+                {
+                    <label class="d-flex p-2"><InputRadio Value="@i.Id" class="p-2 " /><span class="p-2">@i.Text</span></label>
+                }
+
+            </InputRadioGroup>
+        </div>
+        if (count == questions.Count())
+        {
+            <button @onclick="OnFinish" class="btn btn-primary">Finish</button>
+        }
+        else
+        {
+            <button @onclick="OnNext" class="btn btn-primary">Next</button>
+        }
     
-}
+    }
 
-@if (status == "finish")
-{
-    <p>Your english proficency level is: @languageLevel.Level</p>
-    <p>Correct answers: @result.NumberOfCorrectAnswers/@result.NumberOfQuestions</p>
-    <p>@languageLevel.Description</p>
-}
+
+    @if (status == "finish")
+    {
+        if (languageLevel != null)
+        {
+            <p class="fw-bold">Vaša razina engleskog jezika je: @languageLevel.Level</p>
+            <p>Točni odgovori: @result.NumberOfCorrectAnswers/@result.NumberOfQuestions</p>
+            <p>@((MarkupString)languageLevel.Description)</p>
+        }
+        else
+        {
+            <p class="fw-bold">Vaše znanje engleskog jezika je ispod A1 razine.</p>
+        }
+
+    }
+</div>
 
 @code
 {
@@ -99,6 +129,8 @@
     List<AcademicYear> years = new List<AcademicYear>();
     List<MaturaLevel> maturaLevels = new List<MaturaLevel>();
     List<MaturaGrade> maturaGrades = new List<MaturaGrade>();
+
+    List<AcademicYear> yearsGraduate = new List<AcademicYear>();
 
     List<Question> questions = new List<Question>();
     Question currentQuestion = new Question();
@@ -111,6 +143,8 @@
     LanguageLevel languageLevel = new LanguageLevel();
     Data.Models.Result result = new Data.Models.Result();
 
+    public double precentage;
+
 
     protected override async Task OnInitializedAsync()
     {
@@ -120,7 +154,26 @@
         maturaLevels = await MaturaService.GetMaturaLevels();
         maturaGrades = await MaturaService.GetMaturaGrades();
         questions = await QuestionService.GetQuestions();
+        yearsGraduate = await CollegeService.GetGraduateAcademicYears();
+
     }
+
+    async Task OnChange(ChangeEventArgs e)
+    {
+        int selectedProgrammeId = Convert.ToInt32(e.Value);
+        var selectedProgramme = await CollegeService.GetStudyProgrammeById(selectedProgrammeId);
+
+        if (selectedProgramme != null && selectedProgramme.Programme.Contains("Sveučilišni diplomski studij"))
+        {
+            years = await CollegeService.GetGraduateAcademicYears();
+        }
+        else
+        {
+            years = await CollegeService.GetUndergraduateAcademicYears();
+        }
+        result.StudyProgrammeId = selectedProgrammeId;
+    }
+
 
     protected async void OnStart()
     {   
@@ -170,32 +223,36 @@
         }
         result.NumberOfQuestions = count;
         result.NumberOfCorrectAnswers = correctAnswers;
-        //result = (int)(0.5f + ((100f * correctAnswers)/ count));
-        if (correctAnswers <= 5)
-        {
-            languageLevel = await LanguageLevelService.GetLanguageLevelById(1);
-        }
-        else if (correctAnswers >5 && correctAnswers <= 10)
-        {
-            languageLevel = await LanguageLevelService.GetLanguageLevelById(2);
-        }
-        else if (correctAnswers >10 && correctAnswers <= 15)
-        {
-            languageLevel = await LanguageLevelService.GetLanguageLevelById(3);
-        }
-        else if (correctAnswers >15 && correctAnswers <= 20)
-        {
-            languageLevel = await LanguageLevelService.GetLanguageLevelById(4);
-        }
-        else if (correctAnswers > 20 && correctAnswers <= 25)
-        {
-            languageLevel = await LanguageLevelService.GetLanguageLevelById(5);
-        }
-        else if (correctAnswers > 25 && correctAnswers <= 30)
+        precentage = (int)(0.5f + ((100f * correctAnswers)/ count));
+        if (precentage >= 98)
         {
             languageLevel = await LanguageLevelService.GetLanguageLevelById(6);
         }
-        result.LanguageLevelId = languageLevel.Id;
+        else if (precentage >= 94 && precentage < 98)
+        {
+            languageLevel = await LanguageLevelService.GetLanguageLevelById(5);
+        }
+        else if (precentage >= 85 && precentage < 94)
+        {
+            languageLevel = await LanguageLevelService.GetLanguageLevelById(4);
+        }
+        else if (precentage >= 77 && precentage < 85)
+        {
+            languageLevel = await LanguageLevelService.GetLanguageLevelById(3);
+        }
+        else if (precentage >= 65 && precentage < 77)
+        {
+            languageLevel = await LanguageLevelService.GetLanguageLevelById(2);
+        }
+        else if (precentage >= 59 && precentage < 65)
+        {
+            languageLevel = await LanguageLevelService.GetLanguageLevelById(1);
+        }
+        else if (precentage >= 0 && precentage < 59)
+        {
+            languageLevel = null;
+        }
+        result.LanguageLevelId = languageLevel?.Id ?? null;
     }
 
 }

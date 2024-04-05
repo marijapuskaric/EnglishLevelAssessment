@@ -12,16 +12,16 @@ namespace EnglishLevelAssessment.Services
             _context = context;
         }
 
-        public async Task<User> GetUserByEmail(string email)
+        public async Task<User> GetUserByUsername(string username)
         {
             var user = await _context.Users
                         .Select(p => new User
                         {
                             Id = p.Id,
-                            Email = p.Email,
+                            Username = p.Username,
                             Password = p.Password,
                             Role = p.Role
-                        }).Where(p => p.Email == email).FirstOrDefaultAsync();
+                        }).Where(p => p.Username == username).FirstOrDefaultAsync();
             return user;
         }
     }

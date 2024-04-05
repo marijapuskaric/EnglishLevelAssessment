@@ -45,6 +45,8 @@ public partial class EnglishLevelAssessmentContext : DbContext
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
+            entity.Property(e => e.Graduate).HasDefaultValue(true);
+            entity.Property(e => e.Undergraduate).HasDefaultValue(true);
             entity.Property(e => e.Year).HasMaxLength(20);
         });
 
@@ -152,9 +154,9 @@ public partial class EnglishLevelAssessmentContext : DbContext
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
-            entity.Property(e => e.Email).HasMaxLength(500);
             entity.Property(e => e.Password).HasMaxLength(500);
             entity.Property(e => e.Role).HasMaxLength(20);
+            entity.Property(e => e.Username).HasMaxLength(500);
         });
 
         OnModelCreatingPartial(modelBuilder);

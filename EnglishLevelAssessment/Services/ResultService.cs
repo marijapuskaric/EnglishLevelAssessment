@@ -62,8 +62,7 @@ namespace EnglishLevelAssessment.Services
 			double num = 0;
 			if (id == 1)
 			{
-				num = (await GetMaturaResultsByMaturaLevelAndGrade(2, 5)).Count;
-				num += (await GetMaturaResultsByMaturaLevelAndGrade(2, 4)).Count;
+				num = (await GetMaturaResultsByMaturaLevelAndGrade(2, 4)).Count;
 			}
 			else if (id == 2)
 			{
@@ -73,7 +72,6 @@ namespace EnglishLevelAssessment.Services
 			else if (id == 3)
 			{
 				num = (await GetMaturaResultsByMaturaLevelAndGrade(2, 1)).Count;
-				num += (await GetMaturaResultsByMaturaLevelAndGrade(1, 5)).Count;
 			}
 			else if (id == 4)
 			{

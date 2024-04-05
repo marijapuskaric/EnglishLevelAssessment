@@ -13,5 +13,9 @@ public partial class AcademicYear
 
     public bool IsDeleted { get; set; }
 
+    public bool Undergraduate { get; set; }
+
+    public bool Graduate { get; set; }
+
     public virtual ICollection<Result> Results { get; set; } = new List<Result>();
 }
