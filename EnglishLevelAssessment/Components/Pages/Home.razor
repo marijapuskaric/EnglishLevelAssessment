@@ -8,8 +8,8 @@
 @inject ResultService ResultService
 
 <div class="m-1 ms-5 me-5">
-    <p class="m-0 mb-1">Ova aplikacija je izrađena kao diplomski rad na Fakultetu elektrotehnike, računarstva i informacijskih tehnologija Osijek</p>
-    <p class="m-0 mb-1">Cilj aplikacije je procjeniti razinu znanja engleskog jezika prema zajedničkom europskom referentnom okviru za jezike (CEFR-u)</p>
+    <p class="m-0 mb-1">Ova aplikacija je izrađena kao diplomski rad na Fakultetu elektrotehnike, računarstva i informacijskih tehnologija Osijek.</p>
+    <p class="m-0 mb-1">Cilj aplikacije je procjeniti razinu znanja engleskog jezika prema zajedničkom europskom referentnom okviru za jezike (CEFR-u).</p>
     <p class="m-0 mb-1">Prema CEFR-u postoji 6 razina znanja jezika:</p>
     <ul>
         <li>A1 - Begginers</li>
@@ -19,14 +19,16 @@
         <li>C1 - Advanced</li>
         <li>C2 - Proficiency</li>
     </ul>
-    <p class="m-0 mb-1">Pomoću ove aplikacije će se provesti istraživanje poznavanja engleskog jezika na FERIT-u, te će se dobiveni rezultati usporediti s rezultatima državne mature</p>
+    <p class="m-0 mb-1">Pomoću ove aplikacije će se provesti istraživanje poznavanja engleskog jezika na FERIT-u, te će se dobiveni rezultati usporediti s rezultatima državne mature.</p>
     <p class="m-0 mb-1">
         Kako bi se započeo test za provjeru razine znanja potrebno je odabrati smjer i godinu studiranja te razinu i ocjenu državne mature.
+        Uz to prije rješavanja testa potrebno je procijeniti svoju <a href="https://www.coe.int/en/web/common-european-framework-reference-languages/table-1-cefr-3.3-common-reference-levels-global-scale" target="_blank">CEFR</a>
+        razinu poznavanja engleskog jezika prema tablici na linku.
         Nakon toga počinje rješavanje testa koji se sastoji od 30 pitanja višestrukoga odabira pri čemu nema mogućnosti vraćanja na prethodno pitanje. 
-       Završetkom testa dobiva se procijenjena razina znanja engleskog jezika. </p>
+       Završetkom testa dobiva se procijenjena razina znanja engleskog jezika. <b>Svako neodgovoreno pitanje se smatra netočnim.</b> </p>
 </div>
 
-<div class="m-2 ms-5 me-5 p-3 border border-secondary-subtle rounded bg-light">
+<div class="m-2 ms-5 me-5 mb-5 p-3 border border-secondary-subtle rounded bg-light">
     @if (status == "start")
     {
         <form>
@@ -70,8 +72,18 @@
                     }
                 </InputSelect>
             </div>
+            <div class="mb-3">
+                <label class="form-label">Samostalna procjena <a href="https://www.coe.int/en/web/common-european-framework-reference-languages/table-1-cefr-3.3-common-reference-levels-global-scale" target="_blank">CEFR razine poznavanja engleskog jezika</a>:</label>
+                <InputSelect @bind-Value=@result.SelfAssessedLanguageLevelId class="form-select">
+                    <option selected disabled hidden>Procijeni svoju razinu poznavanja engleskog jezika</option>
+                    @foreach (var i in languageLevels)
+                    {
+                        <option Value="@i.Id">@i.Level</option>
+                    }
+                </InputSelect>
+            </div>
         </form>
-        @if(result.StudyProgrammeId != null && result.AcademicYearId != null && result.MaturaLevelId != null && result.MaturaGradeId != null)
+        @if(result.StudyProgrammeId != null && result.AcademicYearId != null && result.MaturaLevelId != null && result.MaturaGradeId != null && result.SelfAssessedLanguageLevelId != null)
         {
             <button  @onclick="OnStart" class="btn btn-primary">Start</button>
         }
@@ -116,6 +128,7 @@
         else
         {
             <p class="fw-bold">Vaše znanje engleskog jezika je ispod A1 razine.</p>
+            <p>Točni odgovori: @result.NumberOfCorrectAnswers/@result.NumberOfQuestions</p>
         }
 
     }
@@ -129,6 +142,7 @@
     List<AcademicYear> years = new List<AcademicYear>();
     List<MaturaLevel> maturaLevels = new List<MaturaLevel>();
     List<MaturaGrade> maturaGrades = new List<MaturaGrade>();
+    List<LanguageLevel> languageLevels = new List<LanguageLevel>();
 
     List<AcademicYear> yearsGraduate = new List<AcademicYear>();
 
@@ -155,7 +169,7 @@
         maturaGrades = await MaturaService.GetMaturaGrades();
         questions = await QuestionService.GetQuestions();
         yearsGraduate = await CollegeService.GetGraduateAcademicYears();
-
+        languageLevels = await LanguageLevelService.GetLanguageLevels();
     }
 
     async Task OnChange(ChangeEventArgs e)
@@ -185,10 +199,12 @@
 
     protected async Task LoadQuestion()
     {
+        var answersList = await AnswerService.GetAnswersForQuestion(questions.ElementAt(count).Id);
         count++;
         currentQuestion = questions.ElementAt(count - 1);
-        answers = await AnswerService.GetAnswersForQuestion(currentQuestion.Id);
+        answers = answersList;
     }
+
 
     protected async void OnNext()
     {
@@ -223,32 +239,32 @@
         }
         result.NumberOfQuestions = count;
         result.NumberOfCorrectAnswers = correctAnswers;
-        precentage = (int)(0.5f + ((100f * correctAnswers)/ count));
+        precentage = (double)(0.5f + ((100f * correctAnswers)/ count));
         if (precentage >= 98)
         {
             languageLevel = await LanguageLevelService.GetLanguageLevelById(6);
         }
-        else if (precentage >= 94 && precentage < 98)
+        else if (precentage >= 92 && precentage < 98)
         {
             languageLevel = await LanguageLevelService.GetLanguageLevelById(5);
         }
-        else if (precentage >= 85 && precentage < 94)
+        else if (precentage >= 82 && precentage < 92)
         {
             languageLevel = await LanguageLevelService.GetLanguageLevelById(4);
         }
-        else if (precentage >= 77 && precentage < 85)
+        else if (precentage >= 72 && precentage < 82)
         {
             languageLevel = await LanguageLevelService.GetLanguageLevelById(3);
         }
-        else if (precentage >= 65 && precentage < 77)
+        else if (precentage >= 62 && precentage < 72)
         {
             languageLevel = await LanguageLevelService.GetLanguageLevelById(2);
         }
-        else if (precentage >= 59 && precentage < 65)
+        else if (precentage >= 52 && precentage < 62)
         {
             languageLevel = await LanguageLevelService.GetLanguageLevelById(1);
         }
-        else if (precentage >= 0 && precentage < 59)
+        else if (precentage >= 0 && precentage < 52)
         {
             languageLevel = null;
         }

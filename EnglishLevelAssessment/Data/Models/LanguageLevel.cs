@@ -13,5 +13,7 @@ public partial class LanguageLevel
 
     public virtual ICollection<Question> Questions { get; set; } = new List<Question>();
 
-    public virtual ICollection<Result> Results { get; set; } = new List<Result>();
+    public virtual ICollection<Result> ResultLanguageLevels { get; set; } = new List<Result>();
+
+    public virtual ICollection<Result> ResultSelfAssessedLanguageLevels { get; set; } = new List<Result>();
 }

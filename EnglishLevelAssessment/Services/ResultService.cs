@@ -23,6 +23,7 @@ namespace EnglishLevelAssessment.Services
             entry.NumberOfQuestions = result.NumberOfQuestions;
             entry.NumberOfCorrectAnswers = result.NumberOfCorrectAnswers;
             entry.LanguageLevelId = result.LanguageLevelId;
+			entry.SelfAssessedLanguageLevelId = result.SelfAssessedLanguageLevelId;
             entry.CreatedAt = DateTime.Now;
             entry.IsDeleted = result.IsDeleted;
             await _context.AddAsync(entry);
@@ -35,13 +36,22 @@ namespace EnglishLevelAssessment.Services
             return list;
         }
 
-		public async Task<List<Result>> GetMaturaResultsByMaturaLevelAndGrade(int maturaLevelId, int maturaGradeId)
+		public async Task<List<Result>> GetMaturaResultsByMaturaLevelAndGrade(string maturaLevel, string maturaGrade)
 		{
-			var list = await _context.Results.Where(p => p.MaturaLevelId == maturaLevelId && p.MaturaGradeId == maturaGradeId).ToListAsync();
+			var list = await _context.Results.Where(p => p.MaturaLevel.MaturaLevel1 == maturaLevel && p.MaturaGrade.Grade == maturaGrade).ToListAsync();
 			return list;
 		}
 
-		
+		public async Task<List<Result>> GetSelfAssessmentCorrectByLanguagelevel(int languageLevelId)
+		{
+			var list = await _context.Results.Where(p => p.LanguageLevelId == languageLevelId && p.SelfAssessedLanguageLevelId == p.LanguageLevelId).ToListAsync();
+			return list;
+		}
+		public async Task<List<Result>> GetSelfAssessmentIncorrectByLanguageLevel(int languageLevelId)
+		{
+			var list = await _context.Results.Where(p => p.LanguageLevelId == languageLevelId && p.SelfAssessedLanguageLevelId != p.LanguageLevelId).ToListAsync();
+			return list;
+		}
 
 		public async Task<List<Result>> GetResultsByLanguageLevelAndStudyProgramme(int languageLevelId, string studyProgramme)
 		{
@@ -62,29 +72,32 @@ namespace EnglishLevelAssessment.Services
 			double num = 0;
 			if (id == 1)
 			{
-				num = (await GetMaturaResultsByMaturaLevelAndGrade(2, 4)).Count;
-			}
+				num = (await GetMaturaResultsByMaturaLevelAndGrade("B (osnovna)", "Dovoljan (2)")).Count;
+                num += (await GetMaturaResultsByMaturaLevelAndGrade("B (osnovna)", "Dobar (3)")).Count;
+            }
 			else if (id == 2)
 			{
-				num = (await GetMaturaResultsByMaturaLevelAndGrade(2, 3)).Count;
-				num += (await GetMaturaResultsByMaturaLevelAndGrade(2, 2)).Count;
+				num = (await GetMaturaResultsByMaturaLevelAndGrade("B (osnovna)", "Vrlo dobar (4)")).Count;
+				num += (await GetMaturaResultsByMaturaLevelAndGrade("B (osnovna)", "Odličan (5)")).Count;
 			}
 			else if (id == 3)
 			{
-				num = (await GetMaturaResultsByMaturaLevelAndGrade(2, 1)).Count;
-			}
+				num = (await GetMaturaResultsByMaturaLevelAndGrade("B (osnovna)", "Odličan (5) više od 95%")).Count;
+                num += (await GetMaturaResultsByMaturaLevelAndGrade("A (viša)", "Dovoljan (2)")).Count;
+                num += (await GetMaturaResultsByMaturaLevelAndGrade("A (viša)", "Dobar (3)")).Count;
+            }
 			else if (id == 4)
 			{
-				num = (await GetMaturaResultsByMaturaLevelAndGrade(1, 4)).Count;
-				num += (await GetMaturaResultsByMaturaLevelAndGrade(1, 3)).Count;
-			}
+				num = (await GetMaturaResultsByMaturaLevelAndGrade("A (viša)", "Vrlo dobar (4)")).Count;
+				num += (await GetMaturaResultsByMaturaLevelAndGrade("A (viša)", "Odličan (5)")).Count;
+            }
 			else if (id == 5)
 			{
-				num = (await GetMaturaResultsByMaturaLevelAndGrade(1, 2)).Count;
+				num = (await GetMaturaResultsByMaturaLevelAndGrade("A (viša)", "Odličan (5) više od 95%")).Count;
 			}
 			else if (id == 6)
 			{
-				num = (await GetMaturaResultsByMaturaLevelAndGrade(1, 1)).Count;
+				num = 0;
 			}
 			return num;
 		}

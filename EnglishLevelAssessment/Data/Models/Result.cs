@@ -25,6 +25,8 @@ public partial class Result
 
     public bool IsDeleted { get; set; }
 
+    public int? SelfAssessedLanguageLevelId { get; set; }
+
     public virtual AcademicYear? AcademicYear { get; set; }
 
     public virtual LanguageLevel? LanguageLevel { get; set; }
@@ -32,6 +34,8 @@ public partial class Result
     public virtual MaturaGrade? MaturaGrade { get; set; }
 
     public virtual MaturaLevel? MaturaLevel { get; set; }
+
+    public virtual LanguageLevel? SelfAssessedLanguageLevel { get; set; }
 
     public virtual StudyProgramme? StudyProgramme { get; set; }
 }

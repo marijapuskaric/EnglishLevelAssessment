@@ -68,7 +68,7 @@ public partial class EnglishLevelAssessmentContext : DbContext
         {
             entity.ToTable("LanguageLevel");
 
-            entity.Property(e => e.Description).HasMaxLength(500);
+            entity.Property(e => e.Description).HasMaxLength(700);
             entity.Property(e => e.Level).HasMaxLength(10);
         });
 
@@ -120,7 +120,7 @@ public partial class EnglishLevelAssessmentContext : DbContext
                 .HasForeignKey(d => d.AcademicYearId)
                 .HasConstraintName("FK_Result_AcademicYear");
 
-            entity.HasOne(d => d.LanguageLevel).WithMany(p => p.Results)
+            entity.HasOne(d => d.LanguageLevel).WithMany(p => p.ResultLanguageLevels)
                 .HasForeignKey(d => d.LanguageLevelId)
                 .HasConstraintName("FK_Result_LanguageLevel");
 
@@ -131,6 +131,10 @@ public partial class EnglishLevelAssessmentContext : DbContext
             entity.HasOne(d => d.MaturaLevel).WithMany(p => p.Results)
                 .HasForeignKey(d => d.MaturaLevelId)
                 .HasConstraintName("FK_Result_MaturaLevel");
+
+            entity.HasOne(d => d.SelfAssessedLanguageLevel).WithMany(p => p.ResultSelfAssessedLanguageLevels)
+                .HasForeignKey(d => d.SelfAssessedLanguageLevelId)
+                .HasConstraintName("FK_Result_SelfAssessedLanguageLevel");
 
             entity.HasOne(d => d.StudyProgramme).WithMany(p => p.Results)
                 .HasForeignKey(d => d.StudyProgrammeId)

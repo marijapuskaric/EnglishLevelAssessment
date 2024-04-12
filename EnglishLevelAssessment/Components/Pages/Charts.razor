@@ -33,6 +33,13 @@
 				Class="m-2">
 				Prijediplomski / Diplomski 
 		</Button>
+		<Button Type="BlazorBootstrap.ButtonType.Button"
+				Color="ButtonColor.Primary"
+				Size="BlazorBootstrap.Size.Small"
+				@onclick="async () => await ShowBarChartSelfAssessment()"
+				Class="m-2">
+			Samostalna procjena
+		</Button>
 	</div>
 </div>
 
@@ -102,7 +109,37 @@
 
 		var datasets = new List<IChartDataset>();
 		datasets.Add(await GetChartDatasetStudyProgramme("Prijediplomski", 0));
-		datasets.Add(await GetChartDatasetStudyProgramme("Diplomski", 1));
+		datasets.Add(await GetChartDatasetStudyProgramme("Sveučilišni diplomski", 1));
+
+		chartData = new ChartData { Labels = XAxisLabels, Datasets = datasets };
+		barChartOptions = new BarChartOptions { Responsive = true, Interaction = new Interaction { Mode = InteractionMode.Index } };
+		barChartOptions.Scales.X.Title.Text = "CEFR razine";
+		barChartOptions.Scales.X.Title.Display = true;
+
+		barChartOptions.Scales.Y.Title.Text = "Broj ispitanika";
+		barChartOptions.Scales.Y.Title.Display = true;
+		await barChart.UpdateAsync(chartData, barChartOptions);
+		StateHasChanged();
+	}
+
+	private async Task ShowBarChartSelfAssessment()
+	{
+		List<string> XAxisLabels = new List<string>();
+		languageLevels = await LanguageLevelService.GetLanguageLevels();
+		if (languageLevels != null)
+		{
+			foreach (var level in languageLevels)
+			{
+				if (level.Level != null)
+				{
+					XAxisLabels.Add(level.Level);
+				}
+			}
+		}
+
+		var datasets = new List<IChartDataset>();
+		datasets.Add(await GetChartDatasetSelfAssessmentCorrect());
+		datasets.Add(await GetChartDatasetSelfAssessmentIncorrect());
 
 		chartData = new ChartData { Labels = XAxisLabels, Datasets = datasets };
 		barChartOptions = new BarChartOptions { Responsive = true, Interaction = new Interaction { Mode = InteractionMode.Index } };
@@ -222,6 +259,58 @@
 			{
 				Label = $"{programme}",
 				Data = chartProgrammeData,
+				BackgroundColor = new List<string> { c.ToRgbString() },
+				BorderColor = new List<string> { c.ToRgbString() },
+				BorderWidth = new List<double> { 0 },
+			};
+	}
+
+	private async Task<BarChartDataset> GetChartDatasetSelfAssessmentCorrect()
+	{
+		List<double> chartCorrectSelfAssessmentData = new List<double>();
+		if (languageLevels != null)
+		{
+			foreach (var level in languageLevels)
+			{
+				if (level.Id != null)
+				{
+					var list = await ResultService.GetSelfAssessmentCorrectByLanguagelevel(level.Id);
+					chartCorrectSelfAssessmentData.Add(list.Count);
+				}
+			}
+		}
+
+		var c = ColorBuilder.CategoricalTwelveColors[0].ToColor();
+		return new BarChartDataset()
+			{
+				Label = $"Ispravna samostalna procjena",
+				Data = chartCorrectSelfAssessmentData,
+				BackgroundColor = new List<string> { c.ToRgbString() },
+				BorderColor = new List<string> { c.ToRgbString() },
+				BorderWidth = new List<double> { 0 },
+			};
+	}
+
+	private async Task<BarChartDataset> GetChartDatasetSelfAssessmentIncorrect()
+	{
+		List<double> chartIncorrectSelfAssessmentData = new List<double>();
+		if (languageLevels != null)
+		{
+			foreach (var level in languageLevels)
+			{
+				if (level.Id != null)
+				{
+					var list = await ResultService.GetSelfAssessmentIncorrectByLanguageLevel(level.Id);
+					chartIncorrectSelfAssessmentData.Add(list.Count);
+				}
+			}
+		}
+
+		var c = ColorBuilder.CategoricalTwelveColors[1].ToColor();
+		return new BarChartDataset()
+			{
+				Label = $"Neispravna samostalna procjena",
+				Data = chartIncorrectSelfAssessmentData,
 				BackgroundColor = new List<string> { c.ToRgbString() },
 				BorderColor = new List<string> { c.ToRgbString() },
 				BorderWidth = new List<double> { 0 },
