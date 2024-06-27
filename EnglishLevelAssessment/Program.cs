@@ -20,15 +20,15 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 builder.Services.AddAuthorization();
 
 builder.Services.AddBlazorBootstrap();
-builder.Services.AddDbContext<EnglishLevelAssessmentContext>(options => options.UseSqlServer(connectionString));
+builder.Services.AddDbContextFactory<EnglishLevelAssessmentContext>(options => options.UseSqlServer(connectionString));
 builder.Services.AddRazorComponents().AddInteractiveServerComponents();
-builder.Services.AddScoped<MaturaService, MaturaService>();
-builder.Services.AddScoped<CollegeService, CollegeService>();
-builder.Services.AddScoped<QuestionService, QuestionService>();
-builder.Services.AddScoped<AnswerService, AnswerService>();
-builder.Services.AddScoped<LanguageLevelService, LanguageLevelService>();
-builder.Services.AddScoped<ResultService, ResultService>();
-builder.Services.AddScoped<UserService, UserService>();
+builder.Services.AddScoped<MaturaService>();
+builder.Services.AddScoped<CollegeService>();
+builder.Services.AddScoped<QuestionService>();
+builder.Services.AddScoped<AnswerService>();
+builder.Services.AddScoped<LanguageLevelService>();
+builder.Services.AddScoped<ResultService>();
+builder.Services.AddScoped<UserService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

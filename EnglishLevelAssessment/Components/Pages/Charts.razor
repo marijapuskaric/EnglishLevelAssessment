@@ -1,52 +1,150 @@
-﻿@page "/charts"
+﻿@page "/results"
 @inject ResultService ResultService
 @inject LanguageLevelService LanguageLevelService
 @rendermode InteractiveServer
 
-<PageTitle>Charts</PageTitle>
+<PageTitle>Results</PageTitle>
 
-<h3>Charts</h3>
+<Tabs EnableFadeEffect="true"> 
+	<Tab Title="Results" Active="true">
+		<Content>
+			<Grid TItem="Result"
+				  Class="table table-hover table-bordered table-striped"
+				  DataProvider="ResultsDataProvider"
+				  AllowPaging="true"
+				  PageSize="10"
+				  AllowSorting="true"
+				  Responsive="true">
+				<GridColumn TItem="Result" HeaderText="Study programme" SortKeySelector="item => item.StudyProgramme.Programme">
+					@{
+						var studyProgramme = context?.StudyProgramme?.Programme ?? "N/A";
+					}
+					@studyProgramme
+				</GridColumn>
+				<GridColumn TItem="Result" HeaderText="Academic year"SortKeySelector="item => item.AcademicYear.Year" >
+					@{
+						var academicYear = context?.AcademicYear?.Year ?? "N/A";
+					}
+					@academicYear
+				</GridColumn>
+				<GridColumn TItem="Result" HeaderText="Matura level" SortKeySelector="item => item.MaturaLevel.MaturaLevel1">
+					@{
+						var maturaLevel = context?.MaturaLevel?.MaturaLevel1 ?? "N/A";
+					}
+					@maturaLevel
+				</GridColumn>
+				<GridColumn TItem="Result" HeaderText="Matura grade" SortKeySelector="item => item.MaturaGrade.Grade">
+					@{
+						var maturaGrade = context?.MaturaGrade?.Grade ?? "N/A";
+					}
+					@maturaGrade
+				</GridColumn>
+				<GridColumn TItem="Result" HeaderText="Number of correct answers" SortKeySelector="item => item.NumberOfCorrectAnswers">
+					@{
+						var correctAnswers = context?.NumberOfCorrectAnswers ?? 0;
+					}
+					@correctAnswers
+				</GridColumn>
+				<GridColumn TItem="Result" HeaderText="Number of questions" SortKeySelector="item => item.NumberOfQuestions">
+					@{
+						var numberOfQuestions = context?.NumberOfQuestions ?? 0;
+					}
+					@numberOfQuestions
+				</GridColumn>
+				<GridColumn TItem="Result" HeaderText="Self assessed language level" SortKeySelector="item => item.SelfAssessedLanguageLevel.Level">
+					@{
+						var selfAssessedLevel = context?.SelfAssessedLanguageLevel?.Level ?? "N/A";
+					}
+					@selfAssessedLevel
+				</GridColumn>
+				<GridColumn TItem="Result" HeaderText="Language level" SortKeySelector= "item => item.LanguageLevel.Level">
+					@{
+						var languageLevel = context?.LanguageLevel?.Level ?? "N/A";
+					}
+					@languageLevel
+				</GridColumn>
+				<GridColumn TItem="Result" HeaderText="Created at" SortKeySelector="item => item.CreatedAt">
+					@{
+						var createdAt = context?.CreatedAt.ToString("yyyy-MM-dd") ?? "N/A";
+					}
+					@createdAt
+				</GridColumn>
 
-<div >
-	<div class="d-flex justify-content-center">
-		<BarChart @ref="barChart" Width="800" Class="mb-4" />
-	</div>
-	<div class="d-flex flex-row justify-content-center">
-		<Button Type="BlazorBootstrap.ButtonType.Button" 
-				Color="ButtonColor.Primary" 
-				Size="BlazorBootstrap.Size.Small" 
-				@onclick="async () => await ShowBarChartOnlineTestMatura()"
-				Class="m-2"> 
-				Online test / Matura 
-		</Button>
-		<Button Type="BlazorBootstrap.ButtonType.Button" 
-				Color="ButtonColor.Primary" 
-				Size="BlazorBootstrap.Size.Small" 
-				@onclick="async () => await ShowBarChartElektrotehnikaRacunarstvo()"
-				Class="m-2">
-				Računarstvo / Elektrotehnika 
-		</Button>
-		<Button Type="BlazorBootstrap.ButtonType.Button" 
-				Color="ButtonColor.Primary" 
-				Size="BlazorBootstrap.Size.Small" 
-				@onclick="async () => await ShowBarChartPrijediplomskiDiplomski()"
-				Class="m-2">
-				Prijediplomski / Diplomski 
-		</Button>
-		<Button Type="BlazorBootstrap.ButtonType.Button"
-				Color="ButtonColor.Primary"
-				Size="BlazorBootstrap.Size.Small"
-				@onclick="async () => await ShowBarChartSelfAssessment()"
-				Class="m-2">
-			Samostalna procjena
-		</Button>
-	</div>
-</div>
+			</Grid>
+		</Content>
+	</Tab>
+	<Tab Title="Charts">
+		<Content>
+			<div class="d-flex">
+				<div class="w-25 d-flex flex-column m-3 justify-content-center">
+					<div class="d-flex flex-row justify-content-between">
+						<Button Type="BlazorBootstrap.ButtonType.Button"
+								Color="ButtonColor.Secondary"
+								Size="BlazorBootstrap.Size.Small"
+								@onclick="async () => await ShowBarChartOnlineTestMatura()"
+								Class="m-2">
+							Online test / Matura
+						</Button>
+							<Button Type="BlazorBootstrap.ButtonType.Button"
+									Color="ButtonColor.Secondary"
+									Size="BlazorBootstrap.Size.Small"
+									@onclick="async () => await ShowBarChartOnlineTestMaturaPercentage()"
+									Class="m-2">
+								Online test / Matura [%]
+							</Button>
+					</div>
+					<Button Type="BlazorBootstrap.ButtonType.Button"
+							Color="ButtonColor.Secondary"
+							Size="BlazorBootstrap.Size.Small"
+							@onclick="async () => await ShowBarChartElektrotehnikaRacunarstvo()"
+							Class="m-2">
+						Računarstvo / Elektrotehnika
+					</Button>
+					<Button Type="BlazorBootstrap.ButtonType.Button"
+							Color="ButtonColor.Secondary"
+							Size="BlazorBootstrap.Size.Small"
+							@onclick="async () => await ShowBarChartPrijediplomskiDiplomski()"
+							Class="m-2">
+						Prijediplomski / Diplomski
+					</Button>
+					<Button Type="BlazorBootstrap.ButtonType.Button"
+							Color="ButtonColor.Secondary"
+							Size="BlazorBootstrap.Size.Small"
+							@onclick="async () => await ShowBarChartSelfAssessment()"
+							Class="m-2">
+						Samostalna procjena prema razinama
+					</Button>
+					<div class="d-flex flex-row justify-content-between">
+						<Button Type="BlazorBootstrap.ButtonType.Button"
+								Color="ButtonColor.Secondary"
+								Size="BlazorBootstrap.Size.Small"
+								@onclick="async () => await ShowBarChartAssessment()"
+								Class="m-2">
+							Samostalna procjena
+						</Button>
+						<Button Type="BlazorBootstrap.ButtonType.Button"
+								Color="ButtonColor.Secondary"
+								Size="BlazorBootstrap.Size.Small"
+								@onclick="async () => await ShowBarChartAssessmentPercentage()"
+								Class="m-2">
+							Samostalna procjena [%]
+						</Button>
+					</div>
+					
+				</div>
+				<div class="w-75 m-3 ms-5  border-start border-primary-subtle">
+					<BarChart @ref="barChart" Width="800" Class="mb-4 ms-5" />
+				</div>
+			</div>
+		</Content>	
+	</Tab>
+</Tabs>
 
 @code 
 {
 	List<LanguageLevel> languageLevels = new List<LanguageLevel>();
-	List<Data.Models.Result> results = new List<Data.Models.Result>();
+	private IEnumerable<Result> results = default!;
+	private HashSet<Result> selectedResults = new();
 
 	private BarChart barChart = default!;
 	private BarChartOptions barChartOptions = default!;
@@ -54,6 +152,7 @@
 
 	protected override async Task OnAfterRenderAsync(bool firstRender)
 	{
+
 		if (firstRender)
 		{
 			await CreateBarChartOnlineTestMatura();
@@ -61,6 +160,19 @@
 		}
 		await base.OnAfterRenderAsync(firstRender);
 	}
+
+	private async Task<GridDataProviderResult<Result>> ResultsDataProvider(GridDataProviderRequest<Result> request)
+	{
+		if (results is null) 
+			results = await ResultService.GetResults();
+
+
+		return await Task.FromResult(request.ApplyTo(results));
+	}
+
+
+
+
 
 	private async Task ShowBarChartElektrotehnikaRacunarstvo()
 	{
@@ -152,6 +264,28 @@
 		StateHasChanged();
 	}
 
+	private async Task ShowBarChartAssessment()
+	{
+		List<string> XAxisLabels = new List<string>();
+		XAxisLabels.Add("Točna procjena");
+		XAxisLabels.Add("Procjena netočna za jednu razinu");
+		XAxisLabels.Add("Procjena netočna za više od jedne razine");
+
+		var datasets = new List<IChartDataset>();
+		datasets.Add(await GetChartDatasetAssessment());
+
+		chartData = new ChartData { Labels = XAxisLabels, Datasets = datasets };
+		barChartOptions = new BarChartOptions { Responsive = true, Interaction = new Interaction { Mode = InteractionMode.Index } };
+		barChartOptions.Scales.X.Title.Text = "Samostalna procjena";
+		barChartOptions.Scales.X.Title.Display = true;
+
+		barChartOptions.Scales.Y.Title.Text = "Broj ispitanika";
+		barChartOptions.Scales.Y.Title.Display = true;
+
+		await barChart.UpdateAsync(chartData, barChartOptions);
+		StateHasChanged();
+	}
+
 	private async Task ShowBarChartOnlineTestMatura()
 	{
 		await CreateBarChartOnlineTestMatura();
@@ -186,6 +320,61 @@
 		barChartOptions.Scales.Y.Title.Text = "Broj ispitanika";
 		barChartOptions.Scales.Y.Title.Display = true;
 	}
+
+	private async Task ShowBarChartOnlineTestMaturaPercentage()
+	{
+		List<string> XAxisLabels = new List<string>();
+		languageLevels = await LanguageLevelService.GetLanguageLevels();
+		if (languageLevels != null)
+		{
+			foreach (var level in languageLevels)
+			{
+				if (level.Level != null)
+				{
+					XAxisLabels.Add(level.Level);
+				}
+			}
+		}
+
+		var datasets = new List<IChartDataset>();
+		datasets.Add(await GetChartDatasetOnlineTestPercentage());
+		datasets.Add(await GetChartDatasetMaturaPercentage());
+
+		chartData = new ChartData { Labels = XAxisLabels, Datasets = datasets };
+		barChartOptions = new BarChartOptions { Responsive = true, Interaction = new Interaction { Mode = InteractionMode.Index } };
+		barChartOptions.Scales.X.Title.Text = "CEFR razine";
+		barChartOptions.Scales.X.Title.Display = true;
+
+		barChartOptions.Scales.Y.Title.Text = "Broj ispitanika [%]";
+		barChartOptions.Scales.Y.Title.Display = true;
+		await barChart.UpdateAsync(chartData, barChartOptions);
+		StateHasChanged();
+	}
+
+	private async Task ShowBarChartAssessmentPercentage()
+	{
+		List<string> XAxisLabels = new List<string>();
+		XAxisLabels.Add("Točna procjena");
+		XAxisLabels.Add("Procjena netočna za jednu razinu");
+		XAxisLabels.Add("Procjena netočna za više od jedne razine");
+
+		var datasets = new List<IChartDataset>();
+		datasets.Add(await GetChartDatasetAssessmentPercentage());
+
+		chartData = new ChartData { Labels = XAxisLabels, Datasets = datasets };
+		barChartOptions = new BarChartOptions { Responsive = true, Interaction = new Interaction { Mode = InteractionMode.Index } };
+		barChartOptions.Scales.X.Title.Text = "Samostalna procjena";
+		barChartOptions.Scales.X.Title.Display = true;
+
+		barChartOptions.Scales.Y.Title.Text = "Postotak ispitanika [%]";
+		barChartOptions.Scales.Y.Title.Display = true;
+
+		await barChart.UpdateAsync(chartData, barChartOptions);
+		StateHasChanged();
+	}
+
+
+
 
 	private async Task<BarChartDataset> GetChartDatasetOnlineTest()
 	{
@@ -316,5 +505,112 @@
 				BorderWidth = new List<double> { 0 },
 			};
 	}
+
+	private async Task<BarChartDataset> GetChartDatasetAssessment()
+	{
+		var incorrectByOne = await ResultService.GetSelfAssessmentIncorrectByOne();
+		var incorrectByMultiple = await ResultService.GetSelfAssessmentIncorrectByMultiple();
+		var correct = await ResultService.GetSelfAssessmentCorrect();
+
+		var list = new List<double>();
+		list.Add(correct);
+		list.Add(incorrectByOne);
+		list.Add(incorrectByMultiple);
+
+		var c = ColorBuilder.CategoricalTwelveColors[1].ToColor();
+		return new BarChartDataset()
+			{
+				Label = $"Samostalna procjena",
+				Data = list,
+				BackgroundColor = new List<string> { c.ToRgbString() },
+				BorderColor = new List<string> { c.ToRgbString() },
+				BorderWidth = new List<double> { 0 },
+			};
+	}
+
+
+	private async Task<BarChartDataset> GetChartDatasetOnlineTestPercentage()
+	{
+		List<double> chartOnlineTestData = new List<double>();
+		var all = await ResultService.GetResults();
+		if (languageLevels != null)
+		{
+			foreach (var level in languageLevels)
+			{
+				if (level.Id != null)
+				{
+					var list = await ResultService.GetOnlineTestResultsByLanguageLevel(level.Id);
+					var onlineTestPercentage = (double)(0.5f + ((100f * list.Count()) / all.Count()));
+					chartOnlineTestData.Add(onlineTestPercentage);
+				}
+			}
+		}
+
+		var c = ColorBuilder.CategoricalTwelveColors[0].ToColor();
+		return new BarChartDataset()
+			{
+				Label = $"Online test",
+				Data = chartOnlineTestData,
+				BackgroundColor = new List<string> { c.ToRgbString() },
+				BorderColor = new List<string> { c.ToRgbString() },
+				BorderWidth = new List<double> { 0 },
+			};
+	}
+
+	private async Task<BarChartDataset> GetChartDatasetMaturaPercentage()
+	{
+		List<double> chartMaturaData = new List<double>();
+		var all = await ResultService.GetResults();
+		if (languageLevels != null)
+		{
+			foreach (var level in languageLevels)
+			{
+				if (level.Id != null)
+				{
+					var list = await ResultService.GetNumberOfMaturaResultsByLanguageLevel(level.Id);
+					var maturaPercentage = (double)(0.5f + ((100f * list) / all.Count()));
+					chartMaturaData.Add(maturaPercentage);
+				}
+			}
+		}
+
+		var c = ColorBuilder.CategoricalTwelveColors[1].ToColor();
+		return new BarChartDataset()
+			{
+				Label = $"Matura",
+				Data = chartMaturaData,
+				BackgroundColor = new List<string> { c.ToRgbString() },
+				BorderColor = new List<string> { c.ToRgbString() },
+				BorderWidth = new List<double> { 0 },
+			};
+	}
+
+	private async Task<BarChartDataset> GetChartDatasetAssessmentPercentage()
+	{
+		var incorrectByOne = await ResultService.GetSelfAssessmentIncorrectByOne();
+		var incorrectByMultiple = await ResultService.GetSelfAssessmentIncorrectByMultiple();
+		var correct = await ResultService.GetSelfAssessmentCorrect();
+		var all = await ResultService.GetResults();
+		var allNumber = all.Count();
+
+		var list = new List<double>();
+		var correctPercentage = (double)(0.5f + ((100f * correct) / allNumber));
+		var incorrectByOnePercentage = (double)(0.5f + ((100f * incorrectByOne) / allNumber));
+		var incorrectByMultiplePercentage = (double)(0.5f + ((100f * incorrectByMultiple) / allNumber));
+		list.Add(correctPercentage);
+		list.Add(incorrectByOnePercentage);
+		list.Add(incorrectByMultiplePercentage);
+
+		var c = ColorBuilder.CategoricalTwelveColors[1].ToColor();
+		return new BarChartDataset()
+			{
+				Label = $"Samostalna procjena",
+				Data = list,
+				BackgroundColor = new List<string> { c.ToRgbString() },
+				BorderColor = new List<string> { c.ToRgbString() },
+				BorderWidth = new List<double> { 0 },
+			};
+	}
+
 }
 

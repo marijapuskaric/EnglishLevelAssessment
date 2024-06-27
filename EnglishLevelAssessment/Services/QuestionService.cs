@@ -5,19 +5,23 @@ namespace EnglishLevelAssessment.Services
 {
     public class QuestionService
     {
-        private EnglishLevelAssessmentContext _context;
+		IDbContextFactory<EnglishLevelAssessmentContext> _context;
 
-        public QuestionService(EnglishLevelAssessmentContext context)
+		public QuestionService(IDbContextFactory<EnglishLevelAssessmentContext> context)
         {
             _context = context;
         }
 
         public async Task<List<Question>> GetNumberOfQuestionsByLevel(int level, int num)
         {
-            Random rand = new Random();
-           var list = await _context.Questions.Where(p => p.LanguageLevelId == level).OrderBy(p => Guid.NewGuid()).Take(num).ToListAsync();
-            
-            return list;
+			using (var dbCtx = await _context.CreateDbContextAsync())
+            {
+				Random rand = new Random();
+				var list = await dbCtx.Questions.Where(p => p.LanguageLevelId == level).OrderBy(p => Guid.NewGuid()).Take(num).ToListAsync();
+
+                return list;
+
+			}
         }
 
         public async Task<List<Question>> GetQuestions()

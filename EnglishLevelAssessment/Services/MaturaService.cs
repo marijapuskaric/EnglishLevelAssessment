@@ -5,23 +5,29 @@ namespace EnglishLevelAssessment.Services
 {
     public class MaturaService
     {
-        private EnglishLevelAssessmentContext _context;
+		IDbContextFactory<EnglishLevelAssessmentContext> _context;
 
-        public MaturaService(EnglishLevelAssessmentContext context)
+		public MaturaService(IDbContextFactory<EnglishLevelAssessmentContext> context)
         {
             _context = context;
         }
 
         public async Task<List<MaturaLevel>> GetMaturaLevels()
         {
-            var list = await _context.MaturaLevels.AsNoTracking().ToListAsync();
-            return list;
+			using (var dbCtx = await _context.CreateDbContextAsync())
+            {
+				var list = await dbCtx.MaturaLevels.AsNoTracking().ToListAsync();
+				return list;
+			}
         }
 
         public async Task<List<MaturaGrade>> GetMaturaGrades()
         {
-            var list = await _context.MaturaGrades.AsNoTracking().ToListAsync();
-            return list;
+			using (var dbCtx = await _context.CreateDbContextAsync())
+            {
+				var list = await dbCtx.MaturaGrades.AsNoTracking().ToListAsync();
+				return list;
+			}
         }
     }
 }

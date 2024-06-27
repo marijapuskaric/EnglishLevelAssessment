@@ -157,7 +157,7 @@
     LanguageLevel languageLevel = new LanguageLevel();
     Data.Models.Result result = new Data.Models.Result();
 
-    public double precentage;
+    public double percentage;
 
 
     protected override async Task OnInitializedAsync()
@@ -239,32 +239,32 @@
         }
         result.NumberOfQuestions = count;
         result.NumberOfCorrectAnswers = correctAnswers;
-        precentage = (double)(0.5f + ((100f * correctAnswers)/ count));
-        if (precentage >= 98)
+        percentage = (double)(0.5f + ((100f * correctAnswers)/ count));
+        if (percentage >= 98)
         {
             languageLevel = await LanguageLevelService.GetLanguageLevelById(6);
         }
-        else if (precentage >= 92 && precentage < 98)
+        else if (percentage >= 92 && percentage < 98)
         {
             languageLevel = await LanguageLevelService.GetLanguageLevelById(5);
         }
-        else if (precentage >= 82 && precentage < 92)
+        else if (percentage >= 82 && percentage < 92)
         {
             languageLevel = await LanguageLevelService.GetLanguageLevelById(4);
         }
-        else if (precentage >= 72 && precentage < 82)
+        else if (percentage >= 72 && percentage < 82)
         {
             languageLevel = await LanguageLevelService.GetLanguageLevelById(3);
         }
-        else if (precentage >= 62 && precentage < 72)
+        else if (percentage >= 62 && percentage < 72)
         {
             languageLevel = await LanguageLevelService.GetLanguageLevelById(2);
         }
-        else if (precentage >= 52 && precentage < 62)
+        else if (percentage >= 52 && percentage < 62)
         {
             languageLevel = await LanguageLevelService.GetLanguageLevelById(1);
         }
-        else if (precentage >= 0 && precentage < 52)
+        else if (percentage >= 0 && percentage < 52)
         {
             languageLevel = null;
         }

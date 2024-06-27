@@ -5,32 +5,39 @@ namespace EnglishLevelAssessment.Services
 {
     public class AnswerService
     {
-        private EnglishLevelAssessmentContext _context;
+		IDbContextFactory<EnglishLevelAssessmentContext> _context;
 
-        public AnswerService(EnglishLevelAssessmentContext context)
+		public AnswerService(IDbContextFactory<EnglishLevelAssessmentContext> context)
         {
             _context = context;
         }
 
         public async Task<List<Answer>> GetAnswersForQuestion(int questionId)
         {
-            var list = await _context.Answers.Where(p => p.QuestionId == questionId).AsNoTracking().ToListAsync();
-            return list;
+			using (var dbCtx = await _context.CreateDbContextAsync())
+            {
+				var list = await dbCtx.Answers.Where(p => p.QuestionId == questionId).AsNoTracking().ToListAsync();
+				return list;
+			}
+				
         }
 
         public async Task<Answer> GetAnswerById(int id)
         {
-            var answer = await _context.Answers
-                        .Select(p => new Answer
-                        {
-                            Id = p.Id,
-                            Text = p.Text,
-                            QuestionId = p.QuestionId,
-                            IsCorrect = p.IsCorrect,
-                            CreatedAt = p.CreatedAt,
-                            IsDeleted = p.IsDeleted
-                        }).Where(p => p.Id == id).FirstOrDefaultAsync();
-            return answer;
+			using (var dbCtx = await _context.CreateDbContextAsync())
+            {
+				var answer = await dbCtx.Answers
+						.Select(p => new Answer
+						{
+							Id = p.Id,
+							Text = p.Text,
+							QuestionId = p.QuestionId,
+							IsCorrect = p.IsCorrect,
+							CreatedAt = p.CreatedAt,
+							IsDeleted = p.IsDeleted
+						}).Where(p => p.Id == id).FirstOrDefaultAsync();
+				return answer;
+			}	
         }
     }
 }
