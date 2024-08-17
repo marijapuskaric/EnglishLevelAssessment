@@ -14,20 +14,16 @@ namespace EnglishLevelAssessment.Services
 
         public async Task<List<MaturaLevel>> GetMaturaLevels()
         {
-			using (var dbCtx = await _context.CreateDbContextAsync())
-            {
-				var list = await dbCtx.MaturaLevels.AsNoTracking().ToListAsync();
-				return list;
-			}
+            using var dbCtx = await _context.CreateDbContextAsync();
+		    var list = await dbCtx.MaturaLevels.AsNoTracking().ToListAsync();
+		    return list;
         }
 
         public async Task<List<MaturaGrade>> GetMaturaGrades()
         {
-			using (var dbCtx = await _context.CreateDbContextAsync())
-            {
-				var list = await dbCtx.MaturaGrades.AsNoTracking().ToListAsync();
-				return list;
-			}
+            using var dbCtx = await _context.CreateDbContextAsync();
+			var list = await dbCtx.MaturaGrades.AsNoTracking().ToListAsync();
+			return list;
         }
     }
 }

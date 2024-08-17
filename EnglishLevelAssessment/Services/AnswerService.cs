@@ -14,30 +14,25 @@ namespace EnglishLevelAssessment.Services
 
         public async Task<List<Answer>> GetAnswersForQuestion(int questionId)
         {
-			using (var dbCtx = await _context.CreateDbContextAsync())
-            {
-				var list = await dbCtx.Answers.Where(p => p.QuestionId == questionId).AsNoTracking().ToListAsync();
-				return list;
-			}
-				
+			using var dbCtx = await _context.CreateDbContextAsync();
+			var list = await dbCtx.Answers.Where(p => p.QuestionId == questionId).AsNoTracking().ToListAsync();
+			return list;	
         }
 
         public async Task<Answer> GetAnswerById(int id)
         {
-			using (var dbCtx = await _context.CreateDbContextAsync())
-            {
-				var answer = await dbCtx.Answers
-						.Select(p => new Answer
-						{
-							Id = p.Id,
-							Text = p.Text,
-							QuestionId = p.QuestionId,
-							IsCorrect = p.IsCorrect,
-							CreatedAt = p.CreatedAt,
-							IsDeleted = p.IsDeleted
-						}).Where(p => p.Id == id).FirstOrDefaultAsync();
-				return answer;
-			}	
+			using var dbCtx = await _context.CreateDbContextAsync();
+			var answer = await dbCtx.Answers
+					.Select(p => new Answer
+					{
+						Id = p.Id,
+						Text = p.Text,
+						QuestionId = p.QuestionId,
+						IsCorrect = p.IsCorrect,
+						CreatedAt = p.CreatedAt,
+						IsDeleted = p.IsDeleted
+					}).Where(p => p.Id == id).FirstOrDefaultAsync();
+			return answer;
         }
     }
 }

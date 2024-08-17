@@ -33,6 +33,8 @@ public partial class EnglishLevelAssessmentContext : DbContext
 
     public virtual DbSet<User> Users { get; set; }
 
+    public virtual DbSet<Vresult> Vresults { get; set; }
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         => optionsBuilder.UseSqlServer("Name=ConnectionStrings:EnglishLevelAssessment");
 
@@ -161,6 +163,21 @@ public partial class EnglishLevelAssessmentContext : DbContext
             entity.Property(e => e.Password).HasMaxLength(500);
             entity.Property(e => e.Role).HasMaxLength(20);
             entity.Property(e => e.Username).HasMaxLength(500);
+        });
+
+        modelBuilder.Entity<Vresult>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToView("VResult");
+
+            entity.Property(e => e.AcademicYear).HasMaxLength(20);
+            entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+            entity.Property(e => e.LanguageLevelResult).HasMaxLength(10);
+            entity.Property(e => e.MaturaGrade).HasMaxLength(500);
+            entity.Property(e => e.MaturaLevel).HasMaxLength(500);
+            entity.Property(e => e.SelfAssessedLanguageLevel).HasMaxLength(10);
+            entity.Property(e => e.StudyProgramme).HasMaxLength(500);
         });
 
         OnModelCreatingPartial(modelBuilder);

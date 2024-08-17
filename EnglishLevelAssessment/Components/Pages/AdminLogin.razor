@@ -14,7 +14,7 @@
         <form method="post" onsubmit="@(() => Logout())"  @formname="logoutForm">
             <AntiforgeryToken />
             <div class="d-flex flex-column">
-                <label class="m-1">Are you sure you want to log out?</label>
+                <label class="m-1">Jeste li sigurni da se želite odjaviti?</label>
                 <div class="m-1">
                     <button type="submit" class="btn btn-primary">Logout </button>
                 </div>
@@ -25,18 +25,18 @@
         <div class="d-flex flex-row justify-content-center ">
             <div class="m-5 p-5 border border-secondary-subtle rounded bg-light">
                 <div class="d-flex flex-row justify-content-center">
-                    <h3>Login</h3>
+                    <h3>Prijava</h3>
                 </div>
                 <EditForm OnValidSubmit="@(() => Login())" Model="model" FormName="loginForm">
                     <DataAnnotationsValidator />
                     <AntiforgeryToken />
                     <div class="mb-4">
-                        <label class="form-label">Username*:</label>
+                        <label class="form-label">Korisničko ime*:</label>
                         <InputText @bind-Value="@model.Username" class="form-control border-info" placeholder="Username" />
                         <ValidationMessage For="() => model.Username" />
                     </div>
                     <div class="mb-4">
-                        <label class="form-label">Password*:</label>
+                        <label class="form-label">Lozinka*:</label>
                         <InputText @bind-Value="@model.Password" type="password" class="form-control border-info" placeholder="Password" />
                         <ValidationMessage For="() => model.Password" />
                     </div>
@@ -64,7 +64,7 @@
         var userAccount = await UserService.GetUserByUsername(model.Username ?? "");
         if (userAccount == null || !VerifyPassword(model.Password, userAccount.Password))
         {
-            message = "Login failed. Incorrect username or password";
+            message = "Pogreška kod prijave. Korisničko ime ili lozinka su netočni.";
             StateHasChanged();
             return;
         }

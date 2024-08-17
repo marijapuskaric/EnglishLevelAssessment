@@ -14,14 +14,10 @@ namespace EnglishLevelAssessment.Services
 
         public async Task<List<Question>> GetNumberOfQuestionsByLevel(int level, int num)
         {
-			using (var dbCtx = await _context.CreateDbContextAsync())
-            {
-				Random rand = new Random();
-				var list = await dbCtx.Questions.Where(p => p.LanguageLevelId == level).OrderBy(p => Guid.NewGuid()).Take(num).ToListAsync();
-
-                return list;
-
-			}
+            using var dbCtx = await _context.CreateDbContextAsync();
+			Random rand = new Random();
+			var list = await dbCtx.Questions.Where(p => p.LanguageLevelId == level).OrderBy(p => Guid.NewGuid()).Take(num).ToListAsync();
+            return list;
         }
 
         public async Task<List<Question>> GetQuestions()
@@ -36,7 +32,6 @@ namespace EnglishLevelAssessment.Services
             var questions =A1Questions.Concat(A2Questions).Concat(B1Questions).Concat(B2Questions).Concat(C1Questions).Concat(C2Questions).ToList();
 
             return questions.OrderBy(p => Guid.NewGuid()).ToList();
-
         }
     }
 }
