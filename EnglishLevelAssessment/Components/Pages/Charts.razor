@@ -96,6 +96,13 @@
                     </Button>
                     <Button Type="BlazorBootstrap.ButtonType.Button"
                             Size="BlazorBootstrap.Size.Small"
+                            @onclick="async () => await AcademicYearHandler()"
+                            Class="m-2"
+                            Style="background-color:#094c79; color:white">
+                        Usporedba rezultata testa prema godinama studija
+                    </Button>
+                    <Button Type="BlazorBootstrap.ButtonType.Button"
+                            Size="BlazorBootstrap.Size.Small"
                             @onclick="async () => await SelfAssessmentHandler()"
                             Class="m-2"
                             Style="background-color:#094c79; color:white">
@@ -103,38 +110,57 @@
                     </Button>
                     <Button Type="BlazorBootstrap.ButtonType.Button"
                             Size="BlazorBootstrap.Size.Small"
+                            @onclick="async () => await OnlineTestSelfAssessmentComparisonHandler()"
+                            Class="m-2"
+                            Style="background-color:#094c79; color:white">
+                        Usporedba samostalne procjene i online testa
+                    </Button>
+                    <Button Type="BlazorBootstrap.ButtonType.Button"
+                            Size="BlazorBootstrap.Size.Small"
                             @onclick="async () => await OnlineTestMaturaComparisonHandler()"
                             Class="m-2"
                             Style="background-color:#094c79; color:white">
                         Usporedba rezultata mature i online testa
-                    </Button>
+                    </Button>  
                 </div>
                 @if (isLoading)
                 {
-                    <div class="w-50 m-3 ms-5  border-start border-primary-subtle d-flex justify-content-center align-items-center" style="height:50rem">
+                    <div class="w-75 m-3 ms-5  d-flex justify-content-center align-items-center">
                         <div>
                             <Spinner Type="SpinnerType.Border" Color="SpinnerColor.Primary" Size="SpinnerSize.ExtraLarge" />
                         </div>
                     </div>
-                    <div class="w-25 m-3 ms-5  border-start border-primary-subtle" style="height:50rem">
-                    </div>
                 }
                 else
                 {
-                    <div class="w-50 m-3 ms-5 p-3 border-start border-primary-subtle d-flex justify-content-center" style="height:50rem">
-                        <BarChart @ref="barChart" WidthUnit="Unit.Rem" Width="800" Class="mb-4 ms-5" />
+                    <div class="w-50 m-3 ms-5 p-3 d-flex justify-content-center">
+                        <BarChart @ref="barChart" WidthUnit="Unit.Rem" Width="150" Class="mb-4 ms-5" />
                     </div>
-                    <div class="w-25 m-3 ms-5 p-3 border-start border-primary-subtle" style="height:50rem">
-                        <PieChart @ref="pieChart1" WidthUnit="Unit.Rem" Width="15" HeightUnit="Unit.Rem" Height="15"></PieChart>
-                        @if(pieChart2visible)
-                        {
-                            <PieChart @ref="pieChart2" WidthUnit="Unit.Rem" Width="15" HeightUnit="Unit.Rem" Height="15" Class="mt-4"></PieChart>
-                        }
-                        @if(pieChart3visible)
-                        {
-                            <PieChart @ref="pieChart3" WidthUnit="Unit.Rem" Width="15" HeightUnit="Unit.Rem" Height="15" Class="mt-4"></PieChart>
-                        }
-                    </div>
+                }
+            </div>
+            <div class="d-flex flex-row justify-content-center">
+                @if (isLoading)
+                {
+                }
+                else
+                {
+                    <PieChart @ref="pieChart1" WidthUnit="Unit.Rem" Width="20" HeightUnit="Unit.Rem" Height="30" Class="me-2"></PieChart>
+                    @if (pieChart2visible)
+                    {
+                        <PieChart @ref="pieChart2" WidthUnit="Unit.Rem" Width="20" HeightUnit="Unit.Rem" Height="30" Class="me-2"></PieChart>
+                    }
+                    @if (pieChart3visible)
+                    {
+                        <PieChart @ref="pieChart3" WidthUnit="Unit.Rem" Width="20" HeightUnit="Unit.Rem" Height="30"></PieChart>
+                    }
+                    @if (pieChart4visible)
+                    {
+                        <PieChart @ref="pieChart4" WidthUnit="Unit.Rem" Width="20" HeightUnit="Unit.Rem" Height="30"></PieChart>
+                    }
+                    @if (pieChart5visible)
+                    {
+                        <PieChart @ref="pieChart5" WidthUnit="Unit.Rem" Width="20" HeightUnit="Unit.Rem" Height="30"></PieChart>
+                    }
                 }
             </div>
         </Content>
@@ -155,14 +181,22 @@
     private PieChart pieChart1 = default!;
     private PieChart pieChart2 = default!;
     private PieChart pieChart3 = default!;
+    private PieChart pieChart4 = default!;
+    private PieChart pieChart5 = default!;
     private PieChartOptions pieChartOptions1 = default!;
     private PieChartOptions pieChartOptions2 = default!;
     private PieChartOptions pieChartOptions3 = default!;
+    private PieChartOptions pieChartOptions4 = default!;
+    private PieChartOptions pieChartOptions5 = default!;
     private ChartData pieChartData1 = default!;
     private ChartData pieChartData2 = default!;
     private ChartData pieChartData3 = default!;
+    private ChartData pieChartData4 = default!;
+    private ChartData pieChartData5 = default!;
     bool pieChart2visible = true;
     bool pieChart3visible = true;
+    bool pieChart4visible = true;
+    bool pieChart5visible = true;
 
     //preparation and display of grid data
     private async Task<GridDataProviderResult<Vresult>> ResultsDataProvider(GridDataProviderRequest<Vresult> request)
@@ -196,6 +230,8 @@
         isLoading = false;
         pieChart2visible = true;
         pieChart3visible = true;
+        pieChart4visible = false;
+        pieChart5visible = false;
         StateHasChanged();
         await UpdateCharts();
     }
@@ -213,6 +249,8 @@
         isLoading = false;
         pieChart2visible = true;
         pieChart3visible = false;
+        pieChart4visible = false;
+        pieChart5visible = false;
         StateHasChanged();
         await UpdateCharts();
     }
@@ -230,6 +268,33 @@
         isLoading = false;
         pieChart2visible = true;
         pieChart3visible = false;
+        pieChart4visible = false;
+        pieChart5visible = false;
+        StateHasChanged();
+        await UpdateCharts();
+    }
+
+    private async Task AcademicYearHandler()
+    {
+        isLoading = true;
+        var chartDataTypes = new List<ChartDataTypes> { ChartDataTypes.Godina_1, ChartDataTypes.Godina_2, ChartDataTypes.Godina_3, ChartDataTypes.Godina_4, ChartDataTypes.Godina_5 };
+        barChartData = await GetChartDataForLanguageLevel(chartDataTypes);
+        pieChartData1 = await GetChartDataForLanguageLevelPercentage(ChartDataTypes.Godina_1);
+        pieChartData2 = await GetChartDataForLanguageLevelPercentage(ChartDataTypes.Godina_2);
+        pieChartData3 = await GetChartDataForLanguageLevelPercentage(ChartDataTypes.Godina_3);
+        pieChartData4 = await GetChartDataForLanguageLevelPercentage(ChartDataTypes.Godina_4);
+        pieChartData5 = await GetChartDataForLanguageLevelPercentage(ChartDataTypes.Godina_5);
+        barChartOptions = SetBarChartOptions(ChartTypes.LanguageLevel);
+        pieChartOptions1 = SetPieChartOptions(ChartDataTypes.Godina_1);
+        pieChartOptions2 = SetPieChartOptions(ChartDataTypes.Godina_2);
+        pieChartOptions3 = SetPieChartOptions(ChartDataTypes.Godina_3);
+        pieChartOptions4 = SetPieChartOptions(ChartDataTypes.Godina_4);
+        pieChartOptions5 = SetPieChartOptions(ChartDataTypes.Godina_5);
+        isLoading = false;
+        pieChart2visible = true;
+        pieChart3visible = true;
+        pieChart4visible = true;
+        pieChart5visible = true;
         StateHasChanged();
         await UpdateCharts();
     }
@@ -244,6 +309,24 @@
         isLoading = false;
         pieChart2visible = false;
         pieChart3visible = false;
+        pieChart4visible = false;
+        pieChart5visible = false;
+        StateHasChanged();
+        await UpdateCharts();
+    }
+
+    private async Task OnlineTestSelfAssessmentComparisonHandler()
+    {
+        isLoading = true;
+        barChartData = await GetChartDataComparison(ChartDataTypes.SelfAssessmentOnlineTest);
+        pieChartData1 = await GetChartDataComparisonPercentage(ChartDataTypes.SelfAssessmentOnlineTest);
+        barChartOptions = SetBarChartOptions(ChartTypes.Comparison);
+        pieChartOptions1 = SetPieChartOptions(ChartDataTypes.SelfAssessmentOnlineTest);
+        isLoading = false;
+        pieChart2visible = false;
+        pieChart3visible = false;
+        pieChart4visible = false;
+        pieChart5visible = false;
         StateHasChanged();
         await UpdateCharts();
     }
@@ -251,13 +334,15 @@
     private async Task OnlineTestMaturaComparisonHandler()
     {
         isLoading = true;
-        barChartData = await GetChartDataMaturaOnlineTest();
-        pieChartData1 = await GetChartDataMaturaOnlineTestPercentage();
-        barChartOptions = SetBarChartOptions(ChartTypes.MaturaOnlineTest);
+        barChartData = await GetChartDataComparison(ChartDataTypes.MaturaOnlineTest);
+        pieChartData1 = await GetChartDataComparisonPercentage(ChartDataTypes.MaturaOnlineTest);
+        barChartOptions = SetBarChartOptions(ChartTypes.Comparison);
         pieChartOptions1 = SetPieChartOptions(ChartDataTypes.MaturaOnlineTest);
         isLoading = false;
         pieChart2visible = false;
         pieChart3visible = false;
+        pieChart4visible = false;
+        pieChart5visible = false;
         StateHasChanged();
         await UpdateCharts();
     }
@@ -266,9 +351,11 @@
     private async Task UpdateCharts()
     {
         await barChart.InitializeAsync(barChartData, barChartOptions);
-        await pieChart1.InitializeAsync(pieChartData1, pieChartOptions1);
-        if (pieChart2visible) await pieChart2.InitializeAsync(pieChartData2, pieChartOptions2);
-        if (pieChart3visible) await pieChart3.InitializeAsync(pieChartData3, pieChartOptions3);
+        await pieChart1.InitializeAsync(pieChartData1, pieChartOptions1, plugins: new string[] { "ChartDataLabels" });
+        if (pieChart2visible) await pieChart2.InitializeAsync(pieChartData2, pieChartOptions2, plugins: new string[] { "ChartDataLabels" });
+        if (pieChart3visible) await pieChart3.InitializeAsync(pieChartData3, pieChartOptions3, plugins: new string[] { "ChartDataLabels" });
+        if (pieChart4visible) await pieChart4.InitializeAsync(pieChartData4, pieChartOptions4, plugins: new string[] { "ChartDataLabels" });
+        if (pieChart5visible) await pieChart5.InitializeAsync(pieChartData5, pieChartOptions5, plugins: new string[] { "ChartDataLabels" });
     }
 
     //Data preparation
@@ -288,10 +375,20 @@
         return numberOfResults;
     }
 
-    private async Task<int> GetDataForMaturaOnlineTestComparison(MaturaOnlineTest maturaOnlineTest)
+    private async Task<int> GetDataForComparison(ChartDataTypes dataType, Comparison comparison)
     {
-        var results = await resultService.GetResultsForMaturaOnlineTest(maturaOnlineTest);
-        var numberOfResults = results.Count();
+        var results = new List<Result>();
+        int numberOfResults = 0;
+        if(dataType == ChartDataTypes.MaturaOnlineTest)
+        {
+            results = await resultService.GetResultsForMaturaOnlineTest(comparison);
+            numberOfResults = results.Count();
+        }
+        else if (dataType == ChartDataTypes.SelfAssessmentOnlineTest)
+        {
+            results = await resultService.GetResultsForSelfAssessmentOnlineTest(comparison);
+            numberOfResults = results.Count();
+        }
         return numberOfResults;
     }
 
@@ -301,8 +398,9 @@
         int numberOfAllResults;
         numberOfAllResults = await resultService.GetNumberOfResultsByChartDataType(chartDataType);
         var numberOfResults = await GetDataForLanguageLevel(languageLevel, chartDataType);
-        var resultPrecentage = (double)((100f * numberOfResults) / numberOfAllResults);
-        return resultPrecentage;
+        var resultPercentage = (double)((100f * numberOfResults) / numberOfAllResults);
+        resultPercentage = Math.Round(resultPercentage * 100.0) / 100.0;
+        return resultPercentage;
     }
 
     private async Task<double> GetDataPercentageForSelfAssessmentCorrect(SelfAssessmentCorrect selfAssessmentCorrect)
@@ -310,17 +408,19 @@
         int numberOfAllResults;
         numberOfAllResults = await resultService.GetNumberOfResults();
         var numberOfResults = await GetDataForSelfAssessmentCorrect(selfAssessmentCorrect);
-        var resultPrecentage = (double)((100f * numberOfResults) / numberOfAllResults);
-        return resultPrecentage;
+        var resultPercentage = (double)((100f * numberOfResults) / numberOfAllResults);
+        resultPercentage = Math.Round(resultPercentage * 100.0) / 100.0;
+        return resultPercentage;
     }
 
-    private async Task<double> GetDataPercentageForMaturaOnlineTestComparison(MaturaOnlineTest maturaOnlineTest)
+    private async Task<double> GetDataPercentageForComparison(ChartDataTypes dataType, Comparison comparison)
     {
         int numberOfAllResults;
         numberOfAllResults = await resultService.GetNumberOfResults();
-        var numberOfResults = await GetDataForMaturaOnlineTestComparison(maturaOnlineTest);
-        var resultPrecentage = (double)((100f * numberOfResults) / numberOfAllResults);
-        return resultPrecentage;
+        var numberOfResults = await GetDataForComparison(dataType, comparison);
+        var resultPercentage = (double)((100f * numberOfResults) / numberOfAllResults);
+        resultPercentage = Math.Round(resultPercentage * 100.0) / 100.0;
+        return resultPercentage;
     }
 
     // Get dataset for bar chart
@@ -350,14 +450,14 @@
         return data;
     }
 
-    private async Task<List<double>> GetDatasetForMaturaOnlineTest()
+    private async Task<List<double>> GetDatasetForComparison(ChartDataTypes dataType)
     {
         var data = new List<double>();
-        var numberOfResults = await GetDataForMaturaOnlineTestComparison(MaturaOnlineTest.Less);
+        var numberOfResults = await GetDataForComparison(dataType, Comparison.Less);
         data.Add(numberOfResults);
-        numberOfResults = await GetDataForMaturaOnlineTestComparison(MaturaOnlineTest.Equal);
+        numberOfResults = await GetDataForComparison(dataType, Comparison.Equal);
         data.Add(numberOfResults);
-        numberOfResults = await GetDataForMaturaOnlineTestComparison(MaturaOnlineTest.More);
+        numberOfResults = await GetDataForComparison(dataType, Comparison.More);
         data.Add(numberOfResults);
         return data;
     }
@@ -373,9 +473,9 @@
         {
             data = await GetDatasetForSelfAssessmentCorrectness();
         }
-        else if (chartType == ChartTypes.MaturaOnlineTest)
+        else if (chartType == ChartTypes.Comparison)
         {
-            data = await GetDatasetForMaturaOnlineTest();
+            data = await GetDatasetForComparison(chartDataType);
         }
         var c = ColorBuilder.CategoricalTwelveColors[color].ToColor();
         string label = GetNameForChartDataType(chartDataType);
@@ -429,14 +529,14 @@
         return data;
     }
 
-    private async Task<List<double>> GetDatasetForMaturaOnlineTestPercentage()
+    private async Task<List<double>> GetDatasetForComparisonPercentage(ChartDataTypes dataType)
     {
         var data = new List<double>();
-        var percentage = await GetDataPercentageForMaturaOnlineTestComparison(MaturaOnlineTest.Less);
+        var percentage = await GetDataPercentageForComparison(dataType, Comparison.Less);
         data.Add(percentage);
-        percentage = await GetDataPercentageForMaturaOnlineTestComparison(MaturaOnlineTest.Equal);
+        percentage = await GetDataPercentageForComparison(dataType, Comparison.Equal);
         data.Add(percentage);
-        percentage = await GetDataPercentageForMaturaOnlineTestComparison(MaturaOnlineTest.More);
+        percentage = await GetDataPercentageForComparison(dataType, Comparison.More);
         data.Add(percentage);
         return data;
     }
@@ -452,11 +552,11 @@
         {
             data = await GetDatasetForSelfAssessmentCorrectnessPercentage();
         }
-        else if (chartType == ChartTypes.MaturaOnlineTest)
+        else if (chartType == ChartTypes.Comparison)
         {
-            data = await GetDatasetForMaturaOnlineTestPercentage();
+            data = await GetDatasetForComparisonPercentage(chartDataType);
         }
-        return new() { Data = data, BackgroundColor = GetRandomBackgroundColors(dataLabelsCount, backgroundColors) };
+        return new() {Datalabels = new PieChartDatasetDataLabels {Anchor = "end"}, Data = data, BackgroundColor = GetRandomBackgroundColors(dataLabelsCount, backgroundColors) };
     }
 
     private async Task<List<IChartDataset>> GetDatasetsPercentage(ChartTypes chartType, ChartDataTypes chartDataType, int dataLabelsCount, string[] backgroundColors)
@@ -489,14 +589,14 @@
         return new ChartData { Labels = labels, Datasets = datasets };
     }
 
-    private async Task<ChartData> GetChartDataMaturaOnlineTest()
+    private async Task<ChartData> GetChartDataComparison(ChartDataTypes dataType)
     {
         BarChart barChart = new();
         string[] backgroundColors = ColorBuilder.CategoricalTwelveColors;
-        var labels = GetLabelsForMaturaOnlineTestComparison();
+        var labels = GetLabelsForComparison(dataType);
         var dataLabelsCount = labels.Count();
-        var chartDataTypes = new List<ChartDataTypes> { ChartDataTypes.MaturaOnlineTest };
-        var datasets = await GetDatasets(ChartTypes.MaturaOnlineTest, chartDataTypes, dataLabelsCount, backgroundColors);
+        var chartDataTypes = new List<ChartDataTypes> { dataType };
+        var datasets = await GetDatasets(ChartTypes.Comparison, chartDataTypes, dataLabelsCount, backgroundColors);
         return new ChartData { Labels = labels, Datasets = datasets };
     }
 
@@ -522,13 +622,13 @@
         return new ChartData { Labels = labels, Datasets = datasets };
     }
 
-    private async Task<ChartData> GetChartDataMaturaOnlineTestPercentage()
+    private async Task<ChartData> GetChartDataComparisonPercentage(ChartDataTypes dataType)
     {
         PieChart pieChart = new();
         string[] backgroundColors = ColorBuilder.CategoricalTwelveColors;
-        var labels = GetLabelsForMaturaOnlineTestComparison();
+        var labels = GetLabelsForComparison(dataType);
         var dataLabelsCount = labels.Count();
-        var datasets = await GetDatasetsPercentage(ChartTypes.MaturaOnlineTest, ChartDataTypes.MaturaOnlineTest, dataLabelsCount, backgroundColors);
+        var datasets = await GetDatasetsPercentage(ChartTypes.Comparison, dataType, dataLabelsCount, backgroundColors);
         return new ChartData { Labels = labels, Datasets = datasets };
     }
 
@@ -560,12 +660,23 @@
         return new List<string> { "Točna procjena", "Procjena netočna za jednu razinu", "Procjena netočna za više od jedne razine" };
     }
 
-    private List<string> GetLabelsForMaturaOnlineTestComparison()
+    private List<string> GetLabelsForComparison(ChartDataTypes dataType)
     {
-        return new List<string> {
+        if (dataType == ChartDataTypes.MaturaOnlineTest)
+        {
+            return new List<string> {
          "Rezultat online testa lošiji od rezultata mature",
          "Rezultat online testa jednak rezultatu mature ",
          "Rezultat online testa bolji od rezultata mature" };
+        }
+        else if (dataType == ChartDataTypes.SelfAssessmentOnlineTest)
+        {
+            return new List<string> {
+         "Samostalna procjena bolja od rezultata online testa",
+         "Samostalna procjena jednaka rezultatu online testa",
+         "Samostalna procjena lošija od rezultata testa" };
+        }
+        return new List<string>();
     }
 
     //Chart options
@@ -583,9 +694,9 @@
         {
             barChartOptions.Scales.X.Title.Text = "Točnost samostalne procjene";
         }
-        else if (chartType == ChartTypes.MaturaOnlineTest)
+        else if (chartType == ChartTypes.Comparison)
         {
-            barChartOptions.Scales.X.Title.Text = "Usporedba mature i online testa";
+            barChartOptions.Scales.X.Title.Text = "Usporedba";
         }
         else
         {
@@ -607,6 +718,7 @@
         title = title + "  [%]";
         pieChartOptions.Plugins.Title!.Text = title;
         pieChartOptions.Plugins.Title.Display = true;
+        pieChartOptions.Plugins.Legend.Position = "bottom";
         return pieChartOptions;
     }
 
@@ -633,6 +745,26 @@
         {
             name = "Elektrotehnika";
         }
+        else if (chartDataType == ChartDataTypes.Godina_1)
+        {
+            name = "1. godina prijediplomskog studija";
+        }
+        else if (chartDataType == ChartDataTypes.Godina_2)
+        {
+            name = "2. godina prijediplomskog studija";
+        }
+        else if (chartDataType == ChartDataTypes.Godina_3)
+        {
+            name = "3. godina prijediplomskog studija";
+        }
+        else if (chartDataType == ChartDataTypes.Godina_4)
+        {
+            name = "1. godina diplomskog studija";
+        }
+        else if (chartDataType == ChartDataTypes.Godina_5)
+        {
+            name = "2. godina diplomskog studija";
+        }
         else if (chartDataType == ChartDataTypes.Prijediplomski)
         {
             name = "Prijediplomski";
@@ -644,6 +776,10 @@
         else if (chartDataType == ChartDataTypes.SelfAssessmentCorrectness)
         {
             name = "Točnost samostalne procjene";
+        }
+        else if (chartDataType == ChartDataTypes.SelfAssessmentOnlineTest)
+        {
+            name = "Usporedba samostalne procjene i online testa";
         }
         else if (chartDataType == ChartDataTypes.MaturaOnlineTest)
         {

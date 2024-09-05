@@ -1,14 +1,10 @@
 ﻿namespace EnglishLevelAssessment.Data.CustomModels
 {
-    public class CodeBooks
-    {
-    }
-
     public enum ChartTypes
     {
         LanguageLevel,
-        MaturaOnlineTest,
-        SelfAssessmentCorrectness
+        Comparison,
+        SelfAssessmentCorrectness,
     }
 
     public enum ChartDataTypes
@@ -21,7 +17,13 @@
         Prijediplomski,
         Diplomski,
         MaturaOnlineTest,
-        SelfAssessmentCorrectness
+        SelfAssessmentCorrectness,
+        Godina_1,
+        Godina_2,
+        Godina_3,
+        Godina_4,
+        Godina_5,
+        SelfAssessmentOnlineTest
     }
 
     public enum MaturaLevels
@@ -56,10 +58,17 @@
         Off_by_multiple
     }
 
-    public enum MaturaOnlineTest
+    public enum Comparison
     {
         Less,
         Equal,
         More
+    }
+
+    public enum AcademicYears
+    {
+        godina_1 = 1,
+        godina_2 = 2,
+        godina_3 = 3
     }
 }

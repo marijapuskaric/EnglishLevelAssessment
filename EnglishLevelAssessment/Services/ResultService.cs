@@ -66,6 +66,31 @@ namespace EnglishLevelAssessment.Services
             {
                 numberOfResults = await dbCtx.Results.Where(p => p.StudyProgramme!.Programme!.Contains("Sveučilišni diplomski")).CountAsync();
             }
+            else if (pieChartDataType == ChartDataTypes.Godina_1)
+            {
+                numberOfResults = await dbCtx.Results.Where(p => p.StudyProgramme!.Programme!.Contains("Prijediplomski") && p.AcademicYearId == (int)AcademicYears.godina_1)
+                                                     .CountAsync();
+            }
+            else if (pieChartDataType == ChartDataTypes.Godina_2)
+            {
+                numberOfResults = await dbCtx.Results.Where(p => p.StudyProgramme!.Programme!.Contains("Prijediplomski") && p.AcademicYearId == (int)AcademicYears.godina_2)
+                                                     .CountAsync();
+            }
+            else if (pieChartDataType == ChartDataTypes.Godina_3)
+            {
+                numberOfResults = await dbCtx.Results.Where(p => p.StudyProgramme!.Programme!.Contains("Prijediplomski") && p.AcademicYearId == (int)AcademicYears.godina_3)
+                                                     .CountAsync();
+            }
+            else if (pieChartDataType == ChartDataTypes.Godina_4)
+            {
+                numberOfResults = await dbCtx.Results.Where(p => p.StudyProgramme!.Programme!.Contains("Sveučilišni diplomski") && p.AcademicYearId == (int)AcademicYears.godina_1)
+                                                     .CountAsync();
+            }
+            else if (pieChartDataType == ChartDataTypes.Godina_5)
+            {
+                numberOfResults = await dbCtx.Results.Where(p => p.StudyProgramme!.Programme!.Contains("Sveučilišni diplomski") && p.AcademicYearId == (int)AcademicYears.godina_2)
+                                                     .CountAsync();
+            }
             else
             {
                 numberOfResults = await dbCtx.Results.CountAsync();
@@ -106,6 +131,36 @@ namespace EnglishLevelAssessment.Services
                 else if (pieChartDataType == ChartDataTypes.Diplomski)
                 {
                     list = await dbCtx.Results.Where(p => p.StudyProgramme!.Programme!.Contains("Sveučilišni diplomski") && p.LanguageLevelId == languageLevelId).ToListAsync();
+                }
+                else if (pieChartDataType == ChartDataTypes.Godina_1)
+                {
+                    list = await dbCtx.Results.Where(p => p.StudyProgramme!.Programme!.Contains("Prijediplomski") 
+                                                          && p.AcademicYearId == (int)AcademicYears.godina_1 
+                                                          && p.LanguageLevelId == languageLevelId).ToListAsync();
+                }
+                else if (pieChartDataType == ChartDataTypes.Godina_2)
+                {
+                    list = await dbCtx.Results.Where(p => p.StudyProgramme!.Programme!.Contains("Prijediplomski")
+                                                          && p.AcademicYearId == (int)AcademicYears.godina_2
+                                                          && p.LanguageLevelId == languageLevelId).ToListAsync();
+                }
+                else if (pieChartDataType == ChartDataTypes.Godina_3)
+                {
+                    list = await dbCtx.Results.Where(p => p.StudyProgramme!.Programme!.Contains("Prijediplomski")
+                                                          && p.AcademicYearId == (int)AcademicYears.godina_3
+                                                          && p.LanguageLevelId == languageLevelId).ToListAsync();
+                }
+                else if (pieChartDataType == ChartDataTypes.Godina_4)
+                {
+                    list = await dbCtx.Results.Where(p => p.StudyProgramme!.Programme!.Contains("Sveučilišni diplomski")
+                                                          && p.AcademicYearId == (int)AcademicYears.godina_1
+                                                          && p.LanguageLevelId == languageLevelId).ToListAsync();
+                }
+                else if (pieChartDataType == ChartDataTypes.Godina_5)
+                {
+                    list = await dbCtx.Results.Where(p => p.StudyProgramme!.Programme!.Contains("Sveučilišni diplomski")
+                                                          && p.AcademicYearId == (int)AcademicYears.godina_2
+                                                          && p.LanguageLevelId == languageLevelId).ToListAsync();
                 }
             }
             else
@@ -194,7 +249,7 @@ namespace EnglishLevelAssessment.Services
             return results;
         }
 
-        public async Task<List<Result>> GetResultsForMaturaOnlineTest(MaturaOnlineTest maturaOnlineTest)
+        public async Task<List<Result>> GetResultsForMaturaOnlineTest(Comparison maturaOnlineTest)
         {
             using var dbCtx = await _context.CreateDbContextAsync();
             List<Result> results = new();
@@ -203,21 +258,21 @@ namespace EnglishLevelAssessment.Services
             foreach (var result in results)
             {
                 var languageLevelId = GetLanguageLevelIdFromMatura(result.MaturaLevelId ?? 0, result.MaturaGradeId ?? 0);
-                if (maturaOnlineTest == MaturaOnlineTest.Less)
+                if (maturaOnlineTest == Comparison.Less)
                 {
                     if (result.LanguageLevelId < languageLevelId || result.LanguageLevelId == null)
                     {
                         list.Add(result);
                     }
                 }
-                else if (maturaOnlineTest == MaturaOnlineTest.Equal)
+                else if (maturaOnlineTest == Comparison.Equal)
                 {
                     if (result.LanguageLevelId == languageLevelId)
                     {
                         list.Add(result);
                     }
                 }
-                else if (maturaOnlineTest == MaturaOnlineTest.More)
+                else if (maturaOnlineTest == Comparison.More)
                 {
                     if (result.LanguageLevelId > languageLevelId)
                     {
@@ -227,6 +282,40 @@ namespace EnglishLevelAssessment.Services
             }
             return list;
         }
+
+        public async Task<List<Result>> GetResultsForSelfAssessmentOnlineTest(Comparison selfAssessmentOnlineTest)
+        {
+            using var dbCtx = await _context.CreateDbContextAsync();
+            List<Result> results = new();
+            List<Result> list = new();
+            results = await dbCtx.Results.ToListAsync();
+            foreach (var result in results)
+            {
+                if (selfAssessmentOnlineTest == Comparison.Less)
+                {
+                    if (result.LanguageLevelId < result.SelfAssessedLanguageLevelId || result.LanguageLevelId == null)
+                    {
+                        list.Add(result);
+                    }
+                }
+                else if (selfAssessmentOnlineTest == Comparison.Equal)
+                {
+                    if (result.LanguageLevelId == result.SelfAssessedLanguageLevelId)
+                    {
+                        list.Add(result);
+                    }
+                }
+                else if (selfAssessmentOnlineTest == Comparison.More)
+                {
+                    if (result.LanguageLevelId > result.SelfAssessedLanguageLevelId)
+                    {
+                        list.Add(result);
+                    }
+                }
+            }
+            return list;
+        }
+
         public int GetLanguageLevelIdFromMatura(int maturaLevelId, int maturaGradeId)
         {
             if (maturaLevelId == (int)MaturaLevels.B && (maturaGradeId == (int)MaturaGrades.Dovoljan || maturaGradeId == (int)MaturaGrades.Dobar))
